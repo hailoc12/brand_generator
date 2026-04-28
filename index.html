@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brand Customizer — Banner Generator Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --app-primary: #2080C8;
+    --app-gold: #F0A500;
+    --app-dark: #1A2232;
+    --app-gray: #4A5568;
+    --app-border: #E2E8F0;
+    --app-bg: #F7FAFC;
+    --app-white: #FFFFFF;
+    --app-red: #E53E3E;
+    --app-green: #38A169;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--app-bg); color: var(--app-dark); font-family: 'Inter', system-ui, sans-serif; }
+
+  header {
+    background: var(--app-dark); color: var(--app-white);
+    padding: 16px 28px; display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  header .logo-box {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: var(--app-primary); display: flex; align-items: center; justify-content: center;
+    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 18px; color: #fff;
+    letter-spacing: 1px;
+  }
+  header h1 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+  header p { font-size: 13px; opacity: 0.65; }
+
+  main {
+    display: grid;
+    grid-template-columns: 440px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 62px);
+  }
+
+  /* ===== FORM PANEL ===== */
+  .form-panel {
+    background: var(--app-white);
+    border-right: 1px solid var(--app-border);
+    overflow-y: auto;
+    max-height: calc(100vh - 62px);
+    position: sticky; top: 62px;
+  }
+  .form-panel::-webkit-scrollbar { width: 6px; }
+  .form-panel::-webkit-scrollbar-thumb { background: var(--app-border); border-radius: 3px; }
+
+  .section-hd {
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--app-border);
+    background: var(--app-bg);
+  }
+  .section-hd h2 {
+    font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px; color: var(--app-primary);
+  }
+  .section-body { padding: 16px 24px; border-bottom: 1px solid var(--app-border); }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block; font-size: 11px; font-weight: 600;
+    color: var(--app-gray); margin-bottom: 5px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .field input[type="text"], .field input[type="url"] {
+    width: 100%; padding: 9px 12px;
+    font-family: 'Inter', sans-serif; font-size: 13px;
+    border: 2px solid var(--app-border); border-radius: 6px;
+    outline: none; background: var(--app-white); color: var(--app-dark);
+    transition: border-color .15s;
+  }
+  .field input:focus { border-color: var(--app-primary); }
+
+  .color-row { display: flex; gap: 12px; align-items: center; }
+  .color-swatch {
+    width: 38px; height: 38px; border-radius: 8px;
+    border: 2px solid var(--app-border); cursor: pointer;
+    overflow: hidden; position: relative;
+    flex-shrink: 0;
+  }
+  .color-swatch input[type="color"] {
+    position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px);
+    cursor: pointer; opacity: 0;
+  }
+  .color-hex { flex: 1; }
+
+  /* Logo upload */
+  .logo-upload-area {
+    border: 2px dashed var(--app-border); border-radius: 10px;
+    padding: 20px; text-align: center; cursor: pointer;
+    background: var(--app-bg); transition: border-color .15s, background .15s;
+    position: relative;
+  }
+  .logo-upload-area:hover { border-color: var(--app-primary); background: #EBF4FF; }
+  .logo-upload-area input[type="file"] { display: none; }
+  .logo-upload-area .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .logo-upload-area p { font-size: 13px; color: var(--app-gray); }
+  .logo-upload-area .logo-preview {
+    max-width: 120px; max-height: 80px; border-radius: 8px;
+    object-fit: contain; margin: 0 auto 8px; display: none;
+  }
+  .logo-upload-area.has-logo .logo-preview { display: block; }
+  .logo-upload-area.has-logo .upload-icon { display: none; }
+
+  /* ===== PREVIEW PANEL ===== */
+  .preview-panel {
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .preview-card {
+    background: var(--app-white); border: 1px solid var(--app-border);
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .preview-card-header {
+    padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+    font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600;
+    color: #fff;
+  }
+  .preview-card-header img {
+    height: 32px; width: 32px; border-radius: 50%; object-fit: cover;
+    background: rgba(255,255,255,0.3); display: none;
+  }
+  .preview-card-header img.visible { display: block; }
+  .preview-card-body { padding: 20px; }
+
+  .color-palette { display: flex; gap: 10px; flex-wrap: wrap; }
+  .palette-chip {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .palette-chip .chip {
+    width: 52px; height: 52px; border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  .palette-chip span { font-size: 10px; color: var(--app-gray); font-weight: 600; letter-spacing: 0.3px; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-cell {
+    background: var(--app-bg); border-radius: 8px; padding: 10px 12px;
+  }
+  .info-cell .label { font-size: 10px; color: var(--app-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; font-weight: 600; }
+  .info-cell .val { font-size: 13px; color: var(--app-dark); font-weight: 600; }
+
+  /* Mini banner preview */
+  .mini-banner {
+    height: 100px; border-radius: 8px; overflow: hidden;
+    position: relative; margin-top: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mini-banner .mb-bar { position: absolute; left: 0; right: 0; height: 8px; }
+  .mini-banner .mb-bar.top { top: 0; }
+  .mini-banner .mb-bar.bottom { bottom: 0; }
+  .mini-banner .mb-brand {
+    font-family: 'Oswald', sans-serif; font-weight: 700;
+    font-size: 18px; letter-spacing: 0.05em;
+    position: relative; z-index: 1; text-align: center;
+  }
+  .mini-banner .mb-website {
+    position: absolute; bottom: 12px; right: 16px;
+    font-size: 10px; font-family: 'Inter', sans-serif;
+  }
+
+  /* ===== DOWNLOAD BAR ===== */
+  .download-bar {
+    background: var(--app-white); border: 1px solid var(--app-border);
+    border-radius: 12px; padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .download-bar h3 {
+    font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600;
+    color: var(--app-gray); text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 14px;
+  }
+  .btn-group { display: flex; flex-direction: column; gap: 10px; }
+  .dl-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 18px; border-radius: 8px;
+    border: 2px solid; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    transition: all .15s ease; text-align: left;
+    background: var(--app-white);
+  }
+  .dl-btn .btn-icon { font-size: 22px; flex-shrink: 0; }
+  .dl-btn .btn-text .title { display: block; font-size: 13px; font-weight: 700; }
+  .dl-btn .btn-text .sub { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; margin-top: 1px; }
+  .dl-btn.primary { background: var(--app-primary); color: #fff; border-color: var(--app-primary); }
+  .dl-btn.primary:hover { filter: brightness(1.1); }
+  .dl-btn.outline-green { color: var(--app-green); border-color: var(--app-green); }
+  .dl-btn.outline-green:hover { background: var(--app-green); color: #fff; }
+  .dl-btn.outline-gray { color: var(--app-gray); border-color: var(--app-border); }
+  .dl-btn.outline-gray:hover { background: var(--app-bg); }
+
+  .required-note {
+    font-size: 11px; color: var(--app-gray); margin-top: 12px;
+    padding: 8px 12px; background: #FFFBEB; border-radius: 6px; border: 1px solid #FEF3C7;
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--app-dark); color: #fff;
+    padding: 10px 20px; border-radius: 24px;
+    font-size: 13px; opacity: 0; pointer-events: none;
+    transition: opacity .2s; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 960px) {
+    main { grid-template-columns: 1fr; }
+    .form-panel { position: static; max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-box">B</div>
+  <div>
+    <h1>Brand Customizer</h1>
+    <p>Tạo Banner Generator theo thương hiệu của bạn</p>
+  </div>
+</header>
+
+<main>
+  <!-- ===== FORM PANEL ===== -->
+  <aside class="form-panel">
+
+    <!-- Logo -->
+    <div class="section-hd"><h2>Logo thương hiệu</h2></div>
+    <div class="section-body">
+      <label class="logo-upload-area" id="logo-upload-area">
+        <input type="file" id="logo-file" accept="image/*" />
+        <img class="logo-preview" id="logo-preview" src="" alt="Logo" />
+        <div class="upload-icon">🖼️</div>
+        <p>Click để tải logo lên<br><span style="font-size:11px;opacity:0.6;">JPG, PNG, SVG, WebP — Khuyến nghị ảnh tròn</span></p>
+      </label>
+      <button onclick="clearLogo()" id="btn-clear-logo" style="display:none;margin-top:8px;width:100%;padding:7px;border:1px solid #E53E3E;color:#E53E3E;background:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">Xóa logo</button>
+    </div>
+
+    <!-- Brand info -->
+    <div class="section-hd"><h2>Thông tin thương hiệu</h2></div>
+    <div class="section-body">
+      <div class="field">
+        <label for="brand-name">Tên thương hiệu *</label>
+        <input type="text" id="brand-name" placeholder="vd: Nhất Y Tâm" value="Nhất Y Tâm" />
+      </div>
+      <div class="field">
+        <label for="tagline">Tagline / Slogan</label>
+        <input type="text" id="tagline" placeholder="vd: Y học &amp; Tâm lý" value="Y học &amp; Tâm lý" />
+      </div>
+      <div class="field">
+        <label for="website">Website / Domain *</label>
+        <input type="text" id="website" placeholder="vd: nhatyduong.com" value="nhatyduong.com" />
+      </div>
+    </div>
+
+    <!-- Colors -->
+    <div class="section-hd"><h2>Màu sắc thương hiệu</h2></div>
+    <div class="section-body">
+      <div class="field">
+        <label>Màu chính (Primary)</label>
+        <div class="color-row">
+          <label class="color-swatch" id="swatch-primary" style="background:#1A7FC1;">
+            <input type="color" id="color-primary" value="#1A7FC1" />
+          </label>
+          <input type="text" class="color-hex" id="hex-primary" value="#1A7FC1" maxlength="7" placeholder="#000000" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Màu phụ / Accent</label>
+        <div class="color-row">
+          <label class="color-swatch" id="swatch-accent" style="background:#7ECBEE;">
+            <input type="color" id="color-accent" value="#7ECBEE" />
+          </label>
+          <input type="text" class="color-hex" id="hex-accent" value="#7ECBEE" maxlength="7" placeholder="#000000" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Defaults -->
+    <div class="section-hd"><h2>Nội dung mặc định</h2></div>
+    <div class="section-body">
+      <div class="field">
+        <label for="course-default">Chủ đề chính</label>
+        <input type="text" id="course-default" placeholder="vd: Khoá sức khỏe K01" value="Khoá sức khỏe K01" />
+      </div>
+      <div class="field">
+        <label for="topic-default">Chủ đề phụ</label>
+        <input type="text" id="topic-default" placeholder="vd: Sức khỏe toàn diện" value="Sức khỏe toàn diện" />
+      </div>
+      <div class="field">
+        <label for="instructor-default">Tác giả</label>
+        <input type="text" id="instructor-default" placeholder="vd: BS. Nguyễn Văn A" value="BS. Nguyễn Văn A" />
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ===== PREVIEW PANEL ===== -->
+  <section class="preview-panel">
+
+    <!-- Brand preview card -->
+    <div class="preview-card">
+      <div class="preview-card-header" id="preview-header" style="background:#1A7FC1;">
+        <img id="preview-logo" src="" alt="" />
+        <span id="preview-brand-name">Nhất Y Tâm</span>
+        <span style="opacity:0.6;margin:0 6px;">|</span>
+        <span style="font-weight:400;font-size:14px;opacity:0.8;">Banner Generator</span>
+      </div>
+      <div class="preview-card-body">
+        <div class="color-palette">
+          <div class="palette-chip">
+            <div class="chip" id="chip-primary" style="background:#1A7FC1;"></div>
+            <span>Primary</span>
+          </div>
+          <div class="palette-chip">
+            <div class="chip" id="chip-accent" style="background:#7ECBEE;"></div>
+            <span>Accent</span>
+          </div>
+          <div class="palette-chip">
+            <div class="chip" id="chip-navy" style="background:#0A3D6B;"></div>
+            <span>Dark</span>
+          </div>
+          <div class="palette-chip">
+            <div class="chip" id="chip-cream" style="background:#E8F5FF;"></div>
+            <span>Light</span>
+          </div>
+        </div>
+
+        <div class="info-grid" style="margin-top:16px;">
+          <div class="info-cell">
+            <div class="label">Thương hiệu</div>
+            <div class="val" id="info-brand">Nhất Y Tâm</div>
+          </div>
+          <div class="info-cell">
+            <div class="label">Website</div>
+            <div class="val" id="info-website">nhatyduong.com</div>
+          </div>
+          <div class="info-cell">
+            <div class="label">Tagline</div>
+            <div class="val" id="info-tagline">Y học &amp; Tâm lý</div>
+          </div>
+          <div class="info-cell">
+            <div class="label">File xuất</div>
+            <div class="val" id="info-filename">NhatYTam_banner.html</div>
+          </div>
+        </div>
+
+        <!-- Mini banner -->
+        <div class="mini-banner" id="mini-banner" style="background:#1A7FC1;color:#fff;">
+          <div class="mb-bar top" id="mb-bar-top" style="background:#7ECBEE;"></div>
+          <div style="z-index:1;text-align:center;">
+            <div class="mb-brand" id="mb-brand">NHẤT Y TÂM</div>
+            <div style="font-size:10px;opacity:0.7;margin-top:4px;" id="mb-tagline">Y học &amp; Tâm lý</div>
+          </div>
+          <div class="mb-bar bottom" id="mb-bar-bottom" style="background:#7ECBEE;"></div>
+          <div class="mb-website" id="mb-website">nhatyduong.com</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download card -->
+    <div class="download-bar">
+      <h3>Tải về</h3>
+      <div class="btn-group">
+        <button class="dl-btn primary" onclick="downloadHTML()">
+          <span class="btn-icon">⬇️</span>
+          <span class="btn-text">
+            <span class="title">Tải file HTML (Banner Generator)</span>
+            <span class="sub">File HTML chạy local — mở bằng Chrome/Edge</span>
+          </span>
+        </button>
+        <button class="dl-btn outline-green" onclick="downloadHDSD(\'md\')">
+          <span class="btn-icon">📋</span>
+          <span class="btn-text">
+            <span class="title">Tải HDSD (.md)</span>
+            <span class="sub">Hướng dẫn định dạng Markdown — mở bằng Notion / Obsidian</span>
+          </span>
+        </button>
+        <button class="dl-btn outline-gray" onclick="downloadHDSD(\'txt\')">
+          <span class="btn-icon">📄</span>
+          <span class="btn-text">
+            <span class="title">Tải HDSD (.txt)</span>
+            <span class="sub">Hướng dẫn plain text — mở bằng bất kỳ editor nào</span>
+          </span>
+        </button>
+      </div>
+      <div class="required-note">
+        ⚠️ Điền <strong>Tên thương hiệu</strong> và <strong>Website</strong> trước khi tải về.
+      </div>
+      <div style="margin-top:14px;padding:10px 12px;background:#F0F7FF;border-radius:8px;border:1px solid #BEE3F8;font-size:11px;color:#2C5282;line-height:1.6;">
+        🙏 Phát triển dựa trên nguồn mở từ
+        <a href="https://xleadershr.github.io/xld_generatorslide_tool/" target="_blank" rel="noopener"
+           style="color:#2080C8;font-weight:600;text-decoration:none;">Xleader Banner Generator</a>
+        của <strong>XLeaders Academy</strong>.
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- TEMPLATE DATA — embedded index.html as JSON -->
+<script type="text/plain" id="tpl">"<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n<meta charset=\"UTF-8\" />\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n<title>XLeaders Academy | Banner Generator<\/title>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&family=Raleway:wght@300;400;500;600;700;800&display=swap\" rel=\"stylesheet\">\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js\"><\/script>\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js\"><\/script>\n<style>\n  :root {\n    --red: #C22620;\n    --gold: #D4AF37;\n    --white: #FFFFFF;\n    --black: #1A1A1A;\n    --navy: #1B2A4A;\n    --gray: #4A4A4A;\n    --cream: #FFF8E1;\n    --border: #E5E5E5;\n    --stage-bg: #F0F0F0;\n  }\n  * { box-sizing: border-box; }\n  html, body { margin: 0; padding: 0; background: var(--white); color: var(--black); font-family: 'Inter', system-ui, sans-serif; }\n\n  header, footer {\n    background: var(--red); color: var(--gold);\n    text-align: center;\n    font-family: 'Oswald', sans-serif;\n    letter-spacing: 0.5px;\n    position: sticky; z-index: 5;\n  }\n  header { padding: 16px 24px; font-size: 19px; font-weight: 600; top: 0; }\n  footer { padding: 14px 24px; font-size: 14px; font-weight: 500; bottom: 0; }\n  header .sep, footer .sep { opacity: 0.6; margin: 0 10px; }\n\n  main {\n    display: grid;\n    grid-template-columns: 420px 1fr;\n    gap: 16px;\n    padding: 16px;\n    align-items: stretch;\n  }\n\n  /* ===== LEFT PANEL ===== */\n  .panel {\n    background: var(--white); border: 1px solid var(--border); border-radius: 10px;\n    max-height: calc(100vh - 110px); overflow-y: auto;\n  }\n  .panel::-webkit-scrollbar { width: 8px; }\n  .panel::-webkit-scrollbar-track { background: transparent; }\n  .panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }\n  .panel::-webkit-scrollbar-thumb:hover { background: var(--gray); }\n\n  .acc { border-bottom: 1px solid var(--border); }\n  .acc:last-child { border-bottom: none; }\n  .acc-hd {\n    width: 100%; text-align: left;\n    padding: 14px 16px;\n    font-family: 'Oswald', sans-serif;\n    font-size: 13px; font-weight: 600;\n    text-transform: uppercase; letter-spacing: 0.8px;\n    color: var(--red); background: var(--white);\n    border: none; cursor: pointer;\n    display: flex; justify-content: space-between; align-items: center;\n  }\n  .acc-hd:hover { background: var(--cream); }\n  .acc-hd::after { content: \"▼\"; font-size: 10px; color: var(--gray); transition: transform .2s; }\n  .acc.closed .acc-hd::after { transform: rotate(-90deg); }\n  .acc-body { padding: 12px 16px 16px; }\n  .acc.closed .acc-body { display: none; }\n\n  .field { margin-bottom: 12px; }\n  .field:last-child { margin-bottom: 0; }\n  .field label {\n    display: block; font-size: 11px; font-weight: 600;\n    color: var(--gray); margin-bottom: 5px;\n    text-transform: uppercase; letter-spacing: 0.5px;\n  }\n  .field input[type=\"text\"], .field select, .field input[type=\"date\"] {\n    width: 100%; padding: 9px 11px;\n    font-family: 'Inter', sans-serif; font-size: 13px;\n    color: var(--black);\n    border: 2px solid var(--gold); border-radius: 6px;\n    outline: none; background: var(--white);\n    transition: border-color .15s ease;\n  }\n  .field input:focus, .field select:focus { border-color: var(--red); }\n\n  .range-row {\n    display: flex; align-items: center; gap: 10px;\n  }\n  .range-row input[type=\"range\"] { flex: 1; accent-color: var(--red); }\n  .range-val {\n    min-width: 48px; text-align: right;\n    font-size: 12px; font-weight: 600; color: var(--red);\n    font-family: 'Oswald', sans-serif;\n  }\n\n  .btn-toggle-group {\n    display: inline-flex; border: 2px solid var(--gold); border-radius: 6px; overflow: hidden;\n  }\n  .btn-toggle {\n    padding: 8px 14px; background: var(--white); color: var(--gray);\n    font-size: 13px; font-weight: 600; cursor: pointer; border: none;\n    border-right: 2px solid var(--gold);\n  }\n  .btn-toggle:last-child { border-right: none; }\n  .btn-toggle.on { background: var(--red); color: var(--white); }\n\n  .pos-grid {\n    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;\n    width: 120px;\n  }\n  .pos-cell {\n    aspect-ratio: 1; border: 2px solid var(--border); border-radius: 4px;\n    cursor: pointer; background: var(--white);\n    display: flex; align-items: center; justify-content: center;\n    font-size: 10px; color: var(--gray);\n  }\n  .pos-cell:hover { border-color: var(--gold); }\n  .pos-cell.on { background: var(--red); border-color: var(--red); }\n  .pos-cell.on::after { content: \"●\"; color: var(--gold); }\n\n  .templates {\n    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;\n  }\n  .tpl {\n    border: 2px solid var(--border); border-radius: 6px;\n    padding: 8px 4px; cursor: pointer;\n    text-align: center; font-size: 11px; font-weight: 600;\n    color: var(--gray); background: var(--white);\n    transition: border-color .15s ease, background .15s ease;\n  }\n  .tpl:hover { border-color: var(--gold); }\n  .tpl.active { border-color: var(--red); background: var(--cream); color: var(--red); }\n  .tpl-swatch {\n    height: 40px; border-radius: 3px;\n    margin-bottom: 4px; border: 1px solid var(--border);\n    position: relative; overflow: hidden;\n  }\n  .tpl-group-label {\n    grid-column: 1 / -1;\n    font-size: 11px; font-weight: 600;\n    color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px;\n    margin-top: 8px; padding-top: 6px;\n    border-top: 1px dashed var(--border);\n  }\n  .tpl-group-label:first-child { margin-top: 0; padding-top: 0; border-top: none; }\n\n  /* speaker uploads */\n  .speakers-row {\n    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;\n  }\n  .speaker-slot {\n    aspect-ratio: 1; border: 2px dashed var(--gold); border-radius: 50%;\n    cursor: pointer; position: relative; overflow: hidden;\n    background: var(--cream); display: flex; align-items: center; justify-content: center;\n    color: var(--gold); font-size: 24px;\n  }\n  .speaker-slot img {\n    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;\n  }\n  .speaker-slot:hover { border-color: var(--red); }\n  .speaker-slot .remove-x {\n    position: absolute; top: 2px; right: 2px;\n    width: 22px; height: 22px; border-radius: 50%;\n    background: var(--red); color: var(--white);\n    display: none; align-items: center; justify-content: center;\n    font-size: 14px; font-weight: bold; border: none; cursor: pointer;\n    z-index: 2;\n  }\n  .speaker-slot.has-img .remove-x { display: flex; }\n  .speaker-slot.has-img { border-style: solid; }\n\n  .warn {\n    background: #FDECEA; border: 1px solid var(--red); color: var(--red);\n    padding: 10px 12px; border-radius: 6px; font-size: 13px;\n    margin-top: 10px; display: none;\n  }\n  .warn.show { display: block; }\n\n  /* ===== PREVIEW ===== */\n  .preview-wrap {\n    background: var(--white); border: 1px solid var(--border); border-radius: 10px;\n    padding: 16px;\n    display: flex; flex-direction: column; gap: 12px;\n    position: sticky; top: 70px;\n    max-height: calc(100vh - 110px);\n  }\n  .stage {\n    width: 100%; flex: 1;\n    min-height: 300px; max-height: 65vh;\n    background: var(--stage-bg); border-radius: 6px;\n    display: flex; align-items: center; justify-content: center;\n    padding: 16px; overflow: hidden;\n    position: relative;\n  }\n  .banner-wrap {\n    position: relative;\n    box-shadow: 0 6px 24px rgba(0,0,0,0.18);\n    overflow: hidden;\n  }\n  .banner {\n    position: absolute; top: 0; left: 0;\n    transform-origin: top left;\n    overflow: hidden;\n    --u: 1;\n    --title-size: 84;\n    --sub-size: 28;\n    --letter: 0;\n    --line: 1.1;\n    --word: 0;\n    --pad: 60;\n    --gap: 20;\n    --font-title: 'Oswald', sans-serif;\n    --font-body: 'Inter', sans-serif;\n    --align: center;\n    --img-pos: center 0%;\n    --img-zoom: 1;\n  }\n  .ruler-h, .ruler-v {\n    position: absolute; pointer-events: none;\n    background: rgba(194, 38, 32, 0.4);\n    display: none; z-index: 3;\n  }\n  .ruler-h { left: 0; right: 0; height: 1px; }\n  .ruler-v { top: 0; bottom: 0; width: 1px; }\n  .stage:hover .ruler-h, .stage:hover .ruler-v { display: block; }\n\n  .meta-line {\n    display: flex; justify-content: space-between; align-items: center;\n    font-size: 12px; color: var(--gray); flex-wrap: wrap; gap: 8px;\n  }\n  .meta-line strong { color: var(--black); font-weight: 600; }\n\n  .btn-row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }\n  button {\n    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;\n    padding: 10px 16px; border-radius: 6px;\n    border: 2px solid var(--red); cursor: pointer;\n    transition: background .15s ease, color .15s ease, border-color .15s ease;\n    letter-spacing: 0.3px; background: var(--white); color: var(--red);\n  }\n  button:disabled { opacity: 0.55; cursor: not-allowed; }\n  button:hover:not(:disabled) { background: var(--red); color: var(--white); }\n  .btn-primary { background: var(--red); color: var(--white); }\n  .btn-primary:hover:not(:disabled) { background: var(--gold); color: var(--black); border-color: var(--gold); }\n  .btn-mini { padding: 6px 10px; font-size: 12px; }\n\n  .toast {\n    position: fixed; bottom: 80px; left: 50%;\n    transform: translateX(-50%);\n    background: var(--black); color: var(--gold);\n    padding: 10px 18px; border-radius: 24px;\n    font-size: 13px; opacity: 0; pointer-events: none;\n    transition: opacity .2s ease; z-index: 100;\n    max-width: 80vw; text-align: center;\n  }\n  .toast.show { opacity: 1; }\n\n  @media (max-width: 1100px) { main { grid-template-columns: 1fr; } .preview-wrap { position: static; max-height: none; } }\n\n  /* ============================================================\n     TEMPLATES — 11 layouts\n     All use CSS vars: --u, --title-size, --sub-size, --letter, --line,\n     --word, --pad, --gap, --font-title, --font-body, --align\n     ============================================================ */\n  .tp { position: absolute; inset: 0; overflow: hidden; font-family: var(--font-body); }\n  .tp-wm {\n    position: absolute; right: calc(40px * var(--u)); bottom: calc(30px * var(--u));\n    font-family: var(--font-body); font-weight: 500;\n    font-size: calc(22px * var(--u));\n  }\n  .tp-title {\n    font-family: var(--font-title); font-weight: 700;\n    font-size: calc(var(--title-size) * 1px * var(--u));\n    line-height: var(--line);\n    letter-spacing: calc(var(--letter) * 1px * var(--u));\n    word-spacing: calc(var(--word) * 1px * var(--u));\n    text-align: var(--align);\n    word-wrap: break-word; overflow-wrap: break-word;\n  }\n  .tp-sub {\n    font-family: var(--font-body); font-weight: 500;\n    font-size: calc(var(--sub-size) * 1px * var(--u));\n    line-height: var(--line);\n    letter-spacing: calc(var(--letter) * 0.4px * var(--u));\n    text-align: var(--align);\n  }\n  .tp-content {\n    position: absolute;\n    top: calc(var(--pad) * 1px * var(--u));\n    left: calc(var(--pad) * 1px * var(--u));\n    right: calc(var(--pad) * 1px * var(--u));\n    bottom: calc(var(--pad) * 1px * var(--u));\n    display: flex; flex-direction: column;\n    align-items: var(--flex-align, center);\n    justify-content: var(--flex-justify, center);\n    gap: calc(var(--gap) * 1px * var(--u));\n    text-align: var(--align);\n  }\n  .tp-brand {\n    font-family: var(--font-title); font-weight: 600;\n    font-size: calc(36px * var(--u));\n    letter-spacing: 0.05em;\n  }\n  .tp-divider {\n    width: calc(160px * var(--u)); height: calc(3px * var(--u));\n    background: currentColor; opacity: 0.7;\n  }\n  .tp-course {\n    font-family: var(--font-body); font-weight: 500;\n    font-size: calc(var(--sub-size) * 1.2px * var(--u));\n    text-transform: uppercase; letter-spacing: 0.1em;\n  }\n  .tp-meta {\n    display: flex; flex-direction: column;\n    gap: calc(6px * var(--u));\n    align-items: inherit;\n    font-family: var(--font-body);\n  }\n  .tp-instructor {\n    font-family: var(--font-title); font-weight: 600;\n    font-size: calc(var(--sub-size) * 1.5px * var(--u));\n  }\n  .tp-date {\n    font-family: var(--font-body); font-weight: 500;\n    font-size: calc(var(--sub-size) * 1px * var(--u));\n    opacity: 0.9;\n  }\n  .tp-label {\n    font-family: var(--font-body); font-weight: 500;\n    font-size: calc(var(--sub-size) * 0.8px * var(--u));\n    letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.85;\n  }\n\n  /* ===== Photo containers (aspect-locked, no distortion on export) ===== */\n  .photo-frame {\n    position: relative;\n    overflow: hidden;\n    background: var(--cream);\n    box-sizing: border-box;\n  }\n  .photo-frame::before {\n    content: '';\n    display: block;\n    padding-bottom: 0;\n  }\n  .photo-frame.photo-1-1::before { padding-bottom: 100%; }\n  .photo-frame.photo-3-4::before { padding-bottom: 133.3333%; }\n  .photo-frame.photo-circle { border-radius: 50%; }\n  .photo-frame.photo-fill::before { display: none; }\n  .photo-img {\n    position: absolute;\n    top: 0; left: 0;\n    width: 100%; height: 100%;\n    object-fit: cover;\n    object-position: var(--img-pos, center 0%);\n    transform: scale(var(--img-zoom, 1));\n    transform-origin: center center;\n    display: block;\n  }\n  .photo-ph {\n    position: absolute;\n    inset: 0;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    color: inherit;\n    opacity: 0.5;\n    font-size: inherit;\n  }\n\n  /* Template 1 — Red vertical */\n  .tp1 { background: var(--red); color: var(--white); }\n  .tp1 .tp-bar { position: absolute; left: 0; right: 0; height: calc(12px * var(--u)); background: var(--gold); }\n  .tp1 .tp-bar-top { top: 0; }\n  .tp1 .tp-bar-bottom { bottom: 0; }\n  .tp1 .tp-title { color: var(--gold); }\n  .tp1 .tp-brand { color: var(--gold); }\n  .tp1 .tp-instructor { color: var(--gold); }\n  .tp1 .tp-divider { background: var(--gold); }\n  .tp1 .tp-wm { color: var(--gold); }\n\n  /* Template 2 — White horizontal split */\n  .tp2 { background: var(--white); color: var(--black); }\n  .tp2-frame {\n    position: absolute; top: calc(40px * var(--u)); left: calc(40px * var(--u));\n    right: calc(40px * var(--u)); bottom: calc(40px * var(--u));\n    border: calc(12px * var(--u)) solid var(--red);\n    display: flex;\n  }\n  .tp2-left { flex: 0 0 38%; background: var(--red); color: var(--gold);\n    display: flex; align-items: center; justify-content: center; padding: calc(30px * var(--u)); text-align: center; }\n  .tp2-left .tp-brand { color: var(--gold); font-size: calc(48px * var(--u)); line-height: 1.15; }\n  .tp2-left .tp-tagline { color: var(--white); font-size: calc(24px * var(--u)); margin-top: calc(16px * var(--u)); }\n  .tp2-left .tp-divider { background: var(--gold); margin: calc(16px * var(--u)) auto; }\n  .tp2-right { flex: 1; padding: calc(var(--pad) * 0.8px * var(--u));\n    display: flex; flex-direction: column; justify-content: space-between; text-align: left !important; }\n  .tp2-right .tp-course { color: var(--red); font-weight: 600; font-family: var(--font-title); text-align: left; }\n  .tp2-right .tp-accent-line { width: calc(80px * var(--u)); height: calc(4px * var(--u)); background: var(--red); margin: calc(10px * var(--u)) 0 calc(24px * var(--u)); }\n  .tp2-right .tp-title { color: var(--black); text-align: left; }\n  .tp2-right .tp-meta { text-align: left; align-items: flex-start; }\n  .tp2-right .tp-instructor { color: var(--black); }\n  .tp2-right .tp-date { color: var(--red); }\n  .tp2 .tp-wm { color: var(--red); bottom: calc(60px * var(--u)); right: calc(60px * var(--u)); }\n\n  /* Template 3 — Black corners */\n  .tp3 { background: var(--black); color: var(--white); }\n  .tp3-frame { position: absolute; top: calc(80px * var(--u)); left: calc(80px * var(--u)); right: calc(80px * var(--u)); bottom: calc(80px * var(--u));\n    border: calc(2px * var(--u)) solid var(--gold); }\n  .tp3-corner { position: absolute; width: calc(90px * var(--u)); height: calc(90px * var(--u)); pointer-events: none; }\n  .tp3-corner-tl { top: calc(60px * var(--u)); left: calc(60px * var(--u)); border-top: calc(5px * var(--u)) solid var(--gold); border-left: calc(5px * var(--u)) solid var(--gold); }\n  .tp3-corner-tr { top: calc(60px * var(--u)); right: calc(60px * var(--u)); border-top: calc(5px * var(--u)) solid var(--gold); border-right: calc(5px * var(--u)) solid var(--gold); }\n  .tp3-corner-bl { bottom: calc(60px * var(--u)); left: calc(60px * var(--u)); border-bottom: calc(5px * var(--u)) solid var(--gold); border-left: calc(5px * var(--u)) solid var(--gold); }\n  .tp3-corner-br { bottom: calc(60px * var(--u)); right: calc(60px * var(--u)); border-bottom: calc(5px * var(--u)) solid var(--gold); border-right: calc(5px * var(--u)) solid var(--gold); }\n  .tp3 .tp-brand { color: var(--gold); }\n  .tp3 .tp-title { color: var(--gold); }\n  .tp3 .tp-instructor { color: var(--gold); }\n  .tp3 .tp-divider { background: var(--gold); }\n  .tp3 .tp-wm { color: var(--gold); bottom: calc(100px * var(--u)); right: calc(100px * var(--u)); }\n\n  /* Template 4 — Split top/bottom */\n  .tp4 { background: var(--white); color: var(--black); }\n  .tp4-top { position: absolute; top: 0; left: 0; right: 0; height: 50%; background: var(--black); color: var(--white);\n    display: flex; flex-direction: column; align-items: center; justify-content: center;\n    padding: calc(var(--pad) * 1px * var(--u)); gap: calc(var(--gap) * 1px * var(--u)); }\n  .tp4-bot { position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: var(--white);\n    display: flex; flex-direction: column; align-items: center; justify-content: center;\n    padding: calc(var(--pad) * 1px * var(--u)); gap: calc(var(--gap) * 0.6px * var(--u)); }\n  .tp4-top .tp-brand { color: var(--gold); font-size: calc(44px * var(--u)); }\n  .tp4-top .tp-course { color: var(--red); font-weight: 600; }\n  .tp4-bot .tp-title { color: var(--black); }\n  .tp4-bot .tp-instructor { color: var(--red); }\n  .tp4 .tp-accent { width: calc(120px * var(--u)); height: calc(4px * var(--u)); background: var(--gold); }\n  .tp4 .tp-wm { color: var(--red); }\n\n  /* Template 5 — Minimal line */\n  .tp5 { background: var(--white); color: var(--black); }\n  .tp5 .tp-content { align-items: var(--flex-align, flex-start); }\n  .tp5 .tp-accent { width: calc(120px * var(--u)); height: calc(6px * var(--u)); background: var(--red); }\n  .tp5 .tp-brand { color: var(--red); font-size: calc(28px * var(--u)); letter-spacing: 0.15em; }\n  .tp5 .tp-course { color: var(--red); text-align: inherit; }\n  .tp5 .tp-title { color: var(--black); }\n  .tp5 .tp-instructor { color: var(--black); }\n  .tp5 .tp-date { color: var(--gray); }\n  .tp5 .tp-wm { color: var(--red); }\n\n  /* Template 6 — Gold frame black */\n  .tp6 { background: var(--black); color: var(--white); }\n  .tp6-frame { position: absolute; top: calc(50px * var(--u)); left: calc(50px * var(--u)); right: calc(50px * var(--u)); bottom: calc(50px * var(--u));\n    border: calc(12px * var(--u)) solid var(--gold); }\n  .tp6-inner-frame { position: absolute; top: calc(70px * var(--u)); left: calc(70px * var(--u)); right: calc(70px * var(--u)); bottom: calc(70px * var(--u));\n    border: calc(2px * var(--u)) solid var(--gold); }\n  .tp6 .tp-brand { color: var(--gold); }\n  .tp6 .tp-title { color: var(--gold); }\n  .tp6 .tp-instructor { color: var(--gold); }\n  .tp6 .tp-divider { background: var(--gold); }\n  .tp6 .tp-wm { color: var(--gold); bottom: calc(100px * var(--u)); right: calc(100px * var(--u)); }\n\n  /* Template 7 — Magazine */\n  .tp7 { background: var(--white); color: var(--black); }\n  .tp7-grid { position: absolute; top: calc(var(--pad) * 1px * var(--u)); left: calc(var(--pad) * 1px * var(--u));\n    right: calc(var(--pad) * 1px * var(--u)); bottom: calc(var(--pad) * 1px * var(--u));\n    display: grid; grid-template-columns: 1fr 1fr; gap: calc(40px * var(--u)); }\n  .tp7-left { display: flex; flex-direction: column; justify-content: space-between; border-right: calc(3px * var(--u)) solid var(--red); padding-right: calc(30px * var(--u)); }\n  .tp7-left .tp-brand { color: var(--red); font-family: var(--font-title); font-weight: 700; font-size: calc(38px * var(--u)); }\n  .tp7-left .tp-title { color: var(--red); text-align: left; }\n  .tp7-left .tp-tagline { color: var(--black); font-size: calc(22px * var(--u)); }\n  .tp7-right { display: flex; flex-direction: column; justify-content: center; gap: calc(16px * var(--u)); }\n  .tp7-right .tp-course { color: var(--red); font-weight: 600; letter-spacing: 0.2em; font-size: calc(24px * var(--u)); }\n  .tp7-right .tp-sub-title { color: var(--black); font-family: var(--font-body); font-weight: 500; font-size: calc(26px * var(--u)); line-height: 1.5; }\n  .tp7-right .tp-instructor { color: var(--black); font-size: calc(32px * var(--u)); }\n  .tp7-right .tp-date { color: var(--red); font-weight: 600; }\n  .tp7-right hr { border: none; border-top: calc(1px * var(--u)) solid var(--black); margin: calc(6px * var(--u)) 0; opacity: 0.25; }\n  .tp7 .tp-wm { color: var(--red); }\n\n  /* Template 8 — Executive navy */\n  .tp8 { background: var(--navy); color: var(--white); }\n  .tp8-accent-bar { position: absolute; top: 0; left: 0; right: 0; height: calc(16px * var(--u)); background: var(--red); }\n  .tp8-side-bar { position: absolute; top: 0; bottom: 0; left: 0; width: calc(16px * var(--u)); background: var(--gold); }\n  .tp8 .tp-brand { color: var(--gold); }\n  .tp8 .tp-title { color: var(--white); }\n  .tp8 .tp-instructor { color: var(--gold); }\n  .tp8 .tp-divider { background: var(--gold); }\n  .tp8 .tp-course { color: var(--gold); }\n  .tp8 .tp-wm { color: var(--gold); }\n\n  /* Template 9 — Speaker 1 photo (left red + right photo) */\n  .tp9 { background: var(--white); color: var(--black); }\n  .tp9-left { position: absolute; top: 0; left: 0; bottom: 0; width: 55%; background: var(--red); color: var(--white);\n    display: flex; flex-direction: column; justify-content: center; padding: calc(var(--pad) * 1px * var(--u)); gap: calc(var(--gap) * 1px * var(--u)); }\n  .tp9-right { position: absolute; top: 0; right: 0; bottom: 0; width: 45%;\n    display: flex; flex-direction: column; align-items: center; justify-content: center;\n    padding: calc(var(--pad) * 1px * var(--u)); gap: calc(20px * var(--u)); }\n  .tp9-left .tp-brand { color: var(--gold); }\n  .tp9-left .tp-course { color: var(--gold); }\n  .tp9-left .tp-title { color: var(--white); text-align: left; }\n  .tp9-left .tp-date { color: var(--gold); }\n  .tp9-left .tp-accent { width: calc(120px * var(--u)); height: calc(4px * var(--u)); background: var(--gold); }\n  .tp9-photo {\n    width: calc(500px * var(--u));\n    max-width: 80%;\n    border: calc(8px * var(--u)) solid var(--gold);\n    color: var(--gold); font-size: calc(120px * var(--u));\n  }\n  .tp9-right .tp-instructor-label { font-size: calc(22px * var(--u)); color: var(--gray); letter-spacing: 0.2em; text-transform: uppercase; }\n  .tp9-right .tp-instructor { color: var(--black); text-align: center; }\n  .tp9 .tp-wm { color: var(--gold); }\n\n  /* Template 10 — Speaker 3 photos row */\n  .tp10 { background: var(--white); color: var(--black); }\n  .tp10-header { position: absolute; top: calc(var(--pad) * 1px * var(--u)); left: calc(var(--pad) * 1px * var(--u)); right: calc(var(--pad) * 1px * var(--u));\n    display: flex; flex-direction: column; align-items: center; gap: calc(var(--gap) * 0.5px * var(--u)); text-align: center; }\n  .tp10-accent-bar { position: absolute; top: 0; left: 0; right: 0; height: calc(14px * var(--u)); background: var(--red); }\n  .tp10-header .tp-brand { color: var(--red); font-weight: 700; }\n  .tp10-header .tp-course { color: var(--gray); }\n  .tp10-header .tp-title { color: var(--black); }\n  .tp10-divider { width: calc(200px * var(--u)); height: calc(3px * var(--u)); background: var(--gold); margin: calc(10px * var(--u)) 0; }\n  .tp10-speakers {\n    position: absolute; bottom: calc(var(--pad) * 1.4px * var(--u));\n    left: calc(var(--pad) * 1px * var(--u)); right: calc(var(--pad) * 1px * var(--u));\n    display: flex; justify-content: center; gap: calc(40px * var(--u));\n  }\n  .tp10-speaker { display: flex; flex-direction: column; align-items: center; gap: calc(10px * var(--u)); flex: 1; max-width: calc(280px * var(--u)); }\n  .tp10-circle {\n    width: calc(220px * var(--u));\n    border: calc(5px * var(--u)) solid var(--red);\n    color: var(--red); font-size: calc(80px * var(--u));\n  }\n  .tp10-name {\n    font-family: var(--font-title); font-weight: 600;\n    font-size: calc(28px * var(--u)); color: var(--black); text-align: center;\n  }\n  .tp10 .tp-date { color: var(--red); font-weight: 600; }\n  .tp10 .tp-wm { color: var(--red); }\n\n  /* Template 11 — Speaker featured (left photo + right black) */\n  .tp11 { background: var(--black); color: var(--white); }\n  .tp11-photo {\n    position: absolute; top: 0; left: 0; bottom: 0; width: 40%;\n    color: var(--red); font-size: calc(200px * var(--u));\n  }\n  .tp11-right { position: absolute; top: 0; right: 0; bottom: 0; width: 60%; background: var(--black);\n    display: flex; flex-direction: column; justify-content: center;\n    padding: calc(var(--pad) * 1px * var(--u)); gap: calc(var(--gap) * 1px * var(--u)); }\n  .tp11-right .tp-brand { color: var(--gold); font-size: calc(34px * var(--u)); letter-spacing: 0.15em; }\n  .tp11-right .tp-accent { width: calc(100px * var(--u)); height: calc(4px * var(--u)); background: var(--gold); }\n  .tp11-right .tp-course { color: var(--gold); }\n  .tp11-right .tp-title { color: var(--white); text-align: left; }\n  .tp11-right .tp-instructor { color: var(--gold); text-align: left; }\n  .tp11-right .tp-date { color: var(--white); opacity: 0.8; text-align: left; }\n  .tp11-right .tp-meta { align-items: flex-start; text-align: left; }\n  .tp11 .tp-wm { color: var(--gold); }\n\n  /* Edit hover */\n  [data-editable]:hover { outline: 2px dashed rgba(212, 175, 55, 0.7); outline-offset: 4px; cursor: text; }\n  [data-editable][contenteditable=\"true\"] { outline: 2px solid var(--gold); outline-offset: 4px; cursor: text; }\n  [data-draggable] { cursor: grab; }\n  [data-draggable]:active { cursor: grabbing; }\n<\/style>\n<\/head>\n<body>\n\n<header>\n  <span>XLeaders Academy<\/span>\n  <span class=\"sep\">|<\/span>\n  <span>Banner Generator<\/span>\n<\/header>\n\n<main>\n  <aside class=\"panel\" id=\"panel\">\n    <!-- Accordion: Nội dung -->\n    <div class=\"acc\" data-acc=\"content\">\n      <button class=\"acc-hd\">Nội dung<\/button>\n      <div class=\"acc-body\">\n        <div class=\"field\">\n          <label for=\"course\">Tên khóa học<\/label>\n          <input type=\"text\" id=\"course\" />\n        <\/div>\n        <div class=\"field\">\n          <label for=\"topic\">Chủ đề buổi học<\/label>\n          <input type=\"text\" id=\"topic\" />\n        <\/div>\n        <div class=\"field\">\n          <label>Tên giảng viên (tối đa 3)<\/label>\n          <input type=\"text\" id=\"instructor1\" placeholder=\"Giảng viên 1\" style=\"margin-bottom:6px;\" />\n          <input type=\"text\" id=\"instructor2\" placeholder=\"Giảng viên 2 (tùy chọn)\" style=\"margin-bottom:6px;\" />\n          <input type=\"text\" id=\"instructor3\" placeholder=\"Giảng viên 3 (tùy chọn)\" />\n        <\/div>\n        <div class=\"field\">\n          <label for=\"date\">Ngày tháng<\/label>\n          <input type=\"text\" id=\"date\" />\n        <\/div>\n        <div class=\"field\">\n          <label>Ảnh diễn giả (tối đa 3)<\/label>\n          <div class=\"speakers-row\">\n            <label class=\"speaker-slot\" data-slot=\"0\">\n              <input type=\"file\" accept=\"image/*\" style=\"display:none;\" />\n              <span class=\"ph\">+<\/span>\n              <button class=\"remove-x\" type=\"button\" title=\"Xóa\">×<\/button>\n            <\/label>\n            <label class=\"speaker-slot\" data-slot=\"1\">\n              <input type=\"file\" accept=\"image/*\" style=\"display:none;\" />\n              <span class=\"ph\">+<\/span>\n              <button class=\"remove-x\" type=\"button\" title=\"Xóa\">×<\/button>\n            <\/label>\n            <label class=\"speaker-slot\" data-slot=\"2\">\n              <input type=\"file\" accept=\"image/*\" style=\"display:none;\" />\n              <span class=\"ph\">+<\/span>\n              <button class=\"remove-x\" type=\"button\" title=\"Xóa\">×<\/button>\n            <\/label>\n          <\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Vị trí ảnh (0 = trên, 100 = dưới)<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"img-pos\" min=\"0\" max=\"100\" value=\"0\"><span class=\"range-val\" id=\"img-pos-val\">0%<\/span><\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Phóng to ảnh<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"img-zoom\" min=\"100\" max=\"150\" value=\"100\" step=\"1\"><span class=\"range-val\" id=\"img-zoom-val\">100%<\/span><\/div>\n        <\/div>\n      <\/div>\n    <\/div>\n\n    <!-- Accordion: Kích thước & Mẫu -->\n    <div class=\"acc\" data-acc=\"layout\">\n      <button class=\"acc-hd\">Kích thước & mẫu<\/button>\n      <div class=\"acc-body\">\n        <div class=\"field\">\n          <label for=\"size\">Kích thước xuất<\/label>\n          <select id=\"size\">\n            <optgroup label=\"Slide / Banner\">\n              <option value=\"slide\">Slide 16:9 — 1920 × 1080<\/option>\n            <\/optgroup>\n            <optgroup label=\"Ảnh đại diện\">\n              <option value=\"fb-avatar\">Facebook Avatar — 1080 × 1080<\/option>\n              <option value=\"zalo-avatar\">Zalo Avatar — 1080 × 1080<\/option>\n            <\/optgroup>\n            <optgroup label=\"Ảnh bìa\">\n              <option value=\"fb-cover\">Facebook Cover — 1640 × 624<\/option>\n              <option value=\"zalo-cover\">Zalo Cover — 1920 × 720<\/option>\n            <\/optgroup>\n            <optgroup label=\"Bài đăng Facebook\">\n              <option value=\"fb-post-square\">FB Post vuông — 1080 × 1080<\/option>\n              <option value=\"fb-post-land\">FB Post ngang — 1200 × 630<\/option>\n              <option value=\"fb-post-port\">FB Post dọc — 1080 × 1350<\/option>\n              <option value=\"fb-story\">FB Story / Reels — 1080 × 1920<\/option>\n            <\/optgroup>\n          <\/select>\n        <\/div>\n        <div class=\"field\">\n          <label>Chọn mẫu<\/label>\n          <div class=\"templates\" id=\"tpl-list\"><\/div>\n        <\/div>\n      <\/div>\n    <\/div>\n\n    <!-- Accordion: Typography -->\n    <div class=\"acc\" data-acc=\"typo\">\n      <button class=\"acc-hd\">Typography<\/button>\n      <div class=\"acc-body\">\n        <div class=\"field\">\n          <label for=\"font-title\">Font tiêu đề<\/label>\n          <select id=\"font-title\">\n            <option>Oswald<\/option>\n            <option>Inter<\/option>\n            <option>Playfair Display<\/option>\n            <option>Montserrat<\/option>\n            <option>Raleway<\/option>\n            <option>Lora<\/option>\n          <\/select>\n        <\/div>\n        <div class=\"field\">\n          <label for=\"font-body\">Font nội dung<\/label>\n          <select id=\"font-body\">\n            <option>Inter<\/option>\n            <option>Oswald<\/option>\n            <option>Playfair Display<\/option>\n            <option>Montserrat<\/option>\n            <option>Raleway<\/option>\n            <option>Lora<\/option>\n          <\/select>\n        <\/div>\n        <div class=\"field\">\n          <label>Cỡ chữ tiêu đề<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"title-size\" min=\"24\" max=\"120\" value=\"84\"><span class=\"range-val\" id=\"title-size-val\">84px<\/span><\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Cỡ chữ phụ<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"sub-size\" min=\"12\" max=\"48\" value=\"28\"><span class=\"range-val\" id=\"sub-size-val\">28px<\/span><\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Căn chỉnh<\/label>\n          <div class=\"btn-toggle-group\" id=\"align-group\">\n            <button class=\"btn-toggle\" data-align=\"left\">Trái<\/button>\n            <button class=\"btn-toggle on\" data-align=\"center\">Giữa<\/button>\n            <button class=\"btn-toggle\" data-align=\"right\">Phải<\/button>\n          <\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Letter spacing<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"letter\" min=\"-2\" max=\"10\" value=\"0\" step=\"0.1\"><span class=\"range-val\" id=\"letter-val\">0px<\/span><\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Line height<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"line\" min=\"1.0\" max=\"2.5\" value=\"1.1\" step=\"0.05\"><span class=\"range-val\" id=\"line-val\">1.10<\/span><\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Word spacing<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"word\" min=\"-2\" max=\"10\" value=\"0\" step=\"0.1\"><span class=\"range-val\" id=\"word-val\">0px<\/span><\/div>\n        <\/div>\n      <\/div>\n    <\/div>\n\n    <!-- Accordion: Spacing -->\n    <div class=\"acc\" data-acc=\"spacing\">\n      <button class=\"acc-hd\">Khoảng cách & vị trí<\/button>\n      <div class=\"acc-body\">\n        <div class=\"field\">\n          <label>Padding tổng thể<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"pad\" min=\"0\" max=\"120\" value=\"60\"><span class=\"range-val\" id=\"pad-val\">60px<\/span><\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Khoảng cách giữa các thành phần<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"gap\" min=\"0\" max=\"60\" value=\"20\"><span class=\"range-val\" id=\"gap-val\">20px<\/span><\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Vị trí nội dung<\/label>\n          <div class=\"pos-grid\" id=\"pos-grid\">\n            <div class=\"pos-cell\" data-pos=\"tl\"><\/div>\n            <div class=\"pos-cell\" data-pos=\"tc\"><\/div>\n            <div class=\"pos-cell\" data-pos=\"tr\"><\/div>\n            <div class=\"pos-cell\" data-pos=\"ml\"><\/div>\n            <div class=\"pos-cell on\" data-pos=\"mc\"><\/div>\n            <div class=\"pos-cell\" data-pos=\"mr\"><\/div>\n            <div class=\"pos-cell\" data-pos=\"bl\"><\/div>\n            <div class=\"pos-cell\" data-pos=\"bc\"><\/div>\n            <div class=\"pos-cell\" data-pos=\"br\"><\/div>\n          <\/div>\n        <\/div>\n      <\/div>\n    <\/div>\n\n    <!-- Accordion: Tiện ích -->\n    <div class=\"acc closed\" data-acc=\"utils\">\n      <button class=\"acc-hd\">Tiện ích<\/button>\n      <div class=\"acc-body\">\n        <div class=\"field\">\n          <button class=\"btn-mini\" id=\"btn-autofit\" style=\"width: 100%;\">Tự động căn chỉnh<\/button>\n          <div class=\"warn\" id=\"warn-overflow\">Cảnh báo: một số dòng văn bản quá dài, có thể bị tràn. Hãy bấm \"Tự động căn chỉnh\" hoặc giảm cỡ chữ.<\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Preset<\/label>\n          <div class=\"btn-row\" style=\"justify-content: flex-start;\">\n            <button class=\"btn-mini\" id=\"btn-save-preset\">Lưu preset<\/button>\n            <button class=\"btn-mini\" id=\"btn-load-preset\">Tải preset<\/button>\n            <button class=\"btn-mini\" id=\"btn-reset\">Reset<\/button>\n          <\/div>\n        <\/div>\n        <div class=\"field\">\n          <label>Chất lượng JPG<\/label>\n          <div class=\"range-row\"><input type=\"range\" id=\"jpg-q\" min=\"60\" max=\"100\" value=\"92\"><span class=\"range-val\" id=\"jpg-q-val\">92%<\/span><\/div>\n        <\/div>\n        <div class=\"field\" style=\"font-size: 11px; color: var(--gray); line-height: 1.5;\">\n          <strong>Phím tắt:<\/strong> <code>Space<\/code> tạo preview · <code>Ctrl+S<\/code> tải PNG · <code>Ctrl+Z<\/code>/<code>Ctrl+Y<\/code> undo/redo · click vào text trên preview để chỉnh sửa trực tiếp.\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/aside>\n\n  <section class=\"preview-wrap\">\n    <div class=\"stage\" id=\"stage\">\n      <div class=\"ruler-h\" id=\"ruler-h\"><\/div>\n      <div class=\"ruler-v\" id=\"ruler-v\"><\/div>\n      <div class=\"banner-wrap\" id=\"banner-wrap\">\n        <div class=\"banner\" id=\"banner\"><\/div>\n      <\/div>\n    <\/div>\n    <div class=\"meta-line\">\n      <span id=\"meta-size\">Slide 16:9 — 1920 × 1080 px<\/span>\n      <span id=\"tpl-label\">Mẫu 1 — Đỏ dọc<\/span>\n    <\/div>\n    <div class=\"btn-row\">\n      <button id=\"btn-render\">Tạo preview<\/button>\n      <button id=\"btn-copy\">Copy clipboard<\/button>\n      <button id=\"btn-jpg\">Tải JPG<\/button>\n      <button id=\"btn-zip\">Tải ZIP tất cả<\/button>\n      <button class=\"btn-primary\" id=\"btn-png\">Tải PNG 2x<\/button>\n    <\/div>\n  <\/section>\n<\/main>\n\n<footer>\n  <span>XLeaders Academy<\/span>\n  <span class=\"sep\">|<\/span>\n  <span>xleader.edu.vn<\/span>\n<\/footer>\n\n<div id=\"toast\" class=\"toast\"><\/div>\n\n<script>\n(function() {\n  const $ = (id) => document.getElementById(id);\n  const banner = $('banner');\n  const wrap = $('banner-wrap');\n  const stage = $('stage');\n  const toast = $('toast');\n\n  // ====== SIZES ======\n  const SIZES = {\n    'slide':          { w: 1920, h: 1080, label: 'Slide 16:9' },\n    'fb-avatar':      { w: 1080, h: 1080, label: 'Facebook Avatar' },\n    'zalo-avatar':    { w: 1080, h: 1080, label: 'Zalo Avatar' },\n    'fb-cover':       { w: 1640, h: 624,  label: 'Facebook Cover' },\n    'zalo-cover':     { w: 1920, h: 720,  label: 'Zalo Cover' },\n    'fb-post-square': { w: 1080, h: 1080, label: 'FB Post vuông' },\n    'fb-post-land':   { w: 1200, h: 630,  label: 'FB Post ngang' },\n    'fb-post-port':   { w: 1080, h: 1350, label: 'FB Post dọc' },\n    'fb-story':       { w: 1080, h: 1920, label: 'FB Story/Reels' }\n  };\n\n  // ====== TEMPLATE META ======\n  const TEMPLATES = [\n    { id: 1,  name: 'Mẫu 1', desc: 'Đỏ dọc',         needsImg: false, swatchCss: 'background:#C22620;' },\n    { id: 2,  name: 'Mẫu 2', desc: 'Trắng ngang',    needsImg: false, swatchCss: 'background:#FFF;box-shadow:inset 0 0 0 3px #C22620;' },\n    { id: 3,  name: 'Mẫu 3', desc: 'Đen sang trọng', needsImg: false, swatchCss: 'background:#1A1A1A;' },\n    { id: 4,  name: 'Mẫu 4', desc: 'Split đen/trắng',needsImg: false, swatchCss: 'background:linear-gradient(#1A1A1A 50%,#fff 50%);' },\n    { id: 5,  name: 'Mẫu 5', desc: 'Tối giản',       needsImg: false, swatchCss: 'background:#fff;box-shadow:inset 10px 0 0 #C22620;' },\n    { id: 6,  name: 'Mẫu 6', desc: 'Khung vàng',     needsImg: false, swatchCss: 'background:#1A1A1A;box-shadow:inset 0 0 0 3px #D4AF37;' },\n    { id: 7,  name: 'Mẫu 7', desc: 'Magazine',       needsImg: false, swatchCss: 'background:linear-gradient(90deg,#fff 50%,#fff 50%);border-right:3px solid #C22620 !important;' },\n    { id: 8,  name: 'Mẫu 8', desc: 'Executive navy', needsImg: false, swatchCss: 'background:#1B2A4A;' },\n    { id: 9,  name: 'Mẫu 9', desc: 'Speaker 1 ảnh',  needsImg: true,  swatchCss: 'background:linear-gradient(90deg,#C22620 55%,#D4AF37 55%);' },\n    { id: 10, name: 'Mẫu 10',desc: 'Speaker 3 ảnh',  needsImg: true,  swatchCss: 'background:#fff;box-shadow:inset 0 4px 0 #C22620;' },\n    { id: 11, name: 'Mẫu 11',desc: 'Speaker featured',needsImg: true, swatchCss: 'background:linear-gradient(90deg,#D4AF37 40%,#1A1A1A 40%);' }\n  ];\n\n  // ====== STATE ======\n  const DEFAULT_STATE = {\n    course: 'MTCV CEO K09',\n    topic: 'Tư duy lãnh đạo chiến lược',\n    instructors: ['TS. Nguyễn Văn A', '', ''],\n    date: '',\n    speakers: [null, null, null],\n    size: 'slide',\n    template: 1,\n    fontTitle: 'Oswald',\n    fontBody: 'Inter',\n    titleSize: 84,\n    subSize: 28,\n    align: 'center',\n    letter: 0,\n    line: 1.1,\n    word: 0,\n    pad: 60,\n    gap: 20,\n    pos: 'mc',\n    offsets: {},\n    jpgQ: 92,\n    imgPos: 0,\n    imgZoom: 100\n  };\n  let state = JSON.parse(JSON.stringify(DEFAULT_STATE));\n\n  // Today\n  const d0 = new Date();\n  state.date = `${String(d0.getDate()).padStart(2,'0')}/${String(d0.getMonth()+1).padStart(2,'0')}/${d0.getFullYear()}`;\n\n  // ====== HISTORY (undo/redo) ======\n  const history = [];\n  let hIdx = -1;\n  let suppressPush = false;\n  function pushHistory() {\n    if (suppressPush) return;\n    const snap = JSON.stringify(state);\n    if (history[hIdx] === snap) return;\n    history.splice(hIdx + 1);\n    history.push(snap);\n    if (history.length > 50) history.shift();\n    hIdx = history.length - 1;\n  }\n  function undo() {\n    if (hIdx <= 0) return;\n    hIdx--;\n    state = JSON.parse(history[hIdx]);\n    suppressPush = true;\n    syncUI(); render();\n    suppressPush = false;\n    showToast('Hoàn tác');\n  }\n  function redo() {\n    if (hIdx >= history.length - 1) return;\n    hIdx++;\n    state = JSON.parse(history[hIdx]);\n    suppressPush = true;\n    syncUI(); render();\n    suppressPush = false;\n    showToast('Làm lại');\n  }\n\n  // ====== UTIL ======\n  function showToast(msg) {\n    toast.textContent = msg;\n    toast.classList.add('show');\n    clearTimeout(showToast._t);\n    showToast._t = setTimeout(() => toast.classList.remove('show'), 1800);\n  }\n  function escapeHtml(s) {\n    return String(s || '').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\n  }\n  function sanitize(s) {\n    return (s || '').replace(/[\\\\/:*?\"<>|]/g, '_').replace(/\\s+/g, '_');\n  }\n\n  // ====== BUILD TEMPLATE HTML ======\n  function buildHTML(tplId, st) {\n    const courseU = escapeHtml((st.course || '').toUpperCase());\n    const course = escapeHtml(st.course || '');\n    const topic = escapeHtml(st.topic || '');\n    const instr0 = escapeHtml(st.instructors[0] || '');\n    const instr1 = escapeHtml(st.instructors[1] || '');\n    const instr2 = escapeHtml(st.instructors[2] || '');\n    const instrs = [instr0, instr1, instr2].filter(Boolean);\n    const instrsJoin = instrs.join(' · ') || '&nbsp;';\n    const date = escapeHtml(st.date || '');\n    const brand = 'XLeaders Academy';\n    const wm = 'xleader.edu.vn';\n\n    const posMap = {\n      tl: { a: 'flex-start', j: 'flex-start' }, tc: { a: 'center', j: 'flex-start' }, tr: { a: 'flex-end', j: 'flex-start' },\n      ml: { a: 'flex-start', j: 'center' },     mc: { a: 'center', j: 'center' },     mr: { a: 'flex-end', j: 'center' },\n      bl: { a: 'flex-start', j: 'flex-end' },   bc: { a: 'center', j: 'flex-end' },   br: { a: 'flex-end', j: 'flex-end' }\n    };\n    const pos = posMap[st.pos] || posMap.mc;\n    const posStyle = `--flex-align:${pos.a};--flex-justify:${pos.j};`;\n\n    const title = `<div class=\"tp-title\" data-editable data-key=\"topic\" data-draggable>${topic}<\/div>`;\n    const courseEl = `<div class=\"tp-course\" data-editable data-key=\"course\" data-draggable>${courseU}<\/div>`;\n    const dateEl = `<div class=\"tp-date\" data-editable data-key=\"date\" data-draggable>${date}<\/div>`;\n    const brandEl = `<div class=\"tp-brand\">${brand.toUpperCase()}<\/div>`;\n    const instrEl = `<div class=\"tp-instructor\" data-editable data-key=\"instructor0\" data-draggable>${instrsJoin}<\/div>`;\n    const wmEl = `<div class=\"tp-wm\">${wm}<\/div>`;\n\n    const photoHTML = (idx) => {\n      const src = st.speakers[idx];\n      if (src) return `<img class=\"photo-img\" src=\"${escapeHtml(src)}\" alt=\"\">`;\n      return `<div class=\"photo-ph\">👤<\/div>`;\n    };\n\n    switch (tplId) {\n      case 1: return `\n        <div class=\"tp tp1\">\n          <div class=\"tp-bar tp-bar-top\"><\/div>\n          <div class=\"tp-content\" style=\"${posStyle}\">\n            ${brandEl}\n            <div class=\"tp-divider\"><\/div>\n            ${courseEl}\n            ${title}\n            <div class=\"tp-divider\" style=\"width:calc(280px * var(--u));\"><\/div>\n            <div class=\"tp-label\">Giảng viên<\/div>\n            ${instrEl}\n            ${dateEl}\n          <\/div>\n          <div class=\"tp-bar tp-bar-bottom\"><\/div>\n          ${wmEl}\n        <\/div>`;\n      case 2: return `\n        <div class=\"tp tp2\">\n          <div class=\"tp2-frame\">\n            <div class=\"tp2-left\">\n              <div>\n                <div class=\"tp-brand\">XLEADERS<\/div>\n                <div class=\"tp-brand\">ACADEMY<\/div>\n                <div class=\"tp-divider\"><\/div>\n                <div class=\"tp-tagline\">Đào tạo lãnh đạo<\/div>\n              <\/div>\n            <\/div>\n            <div class=\"tp2-right\">\n              <div>\n                ${courseEl}\n                <div class=\"tp-accent-line\"><\/div>\n                ${title}\n              <\/div>\n              <div class=\"tp-meta\">\n                <div class=\"tp-label\">Giảng viên<\/div>\n                ${instrEl}\n                ${dateEl}\n              <\/div>\n            <\/div>\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 3: return `\n        <div class=\"tp tp3\">\n          <div class=\"tp3-frame\"><\/div>\n          <div class=\"tp3-corner tp3-corner-tl\"><\/div>\n          <div class=\"tp3-corner tp3-corner-tr\"><\/div>\n          <div class=\"tp3-corner tp3-corner-bl\"><\/div>\n          <div class=\"tp3-corner tp3-corner-br\"><\/div>\n          <div class=\"tp-content\" style=\"${posStyle}\">\n            ${brandEl}\n            <div class=\"tp-divider\"><\/div>\n            ${courseEl}\n            ${title}\n            <div class=\"tp-divider\" style=\"width:calc(320px * var(--u));opacity:0.5;\"><\/div>\n            <div class=\"tp-label\">Giảng viên<\/div>\n            ${instrEl}\n            ${dateEl}\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 4: return `\n        <div class=\"tp tp4\">\n          <div class=\"tp4-top\">\n            ${brandEl}\n            ${courseEl}\n            <div class=\"tp-accent\"><\/div>\n          <\/div>\n          <div class=\"tp4-bot\">\n            ${title}\n            <div class=\"tp-meta\">\n              ${instrEl}\n              ${dateEl}\n            <\/div>\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 5: return `\n        <div class=\"tp tp5\">\n          <div class=\"tp-content\" style=\"${posStyle}align-items:${pos.a};text-align:${st.align};\">\n            <div class=\"tp-brand\">XLEADERS ACADEMY<\/div>\n            <div class=\"tp-accent\"><\/div>\n            ${courseEl}\n            ${title}\n            ${instrEl}\n            ${dateEl}\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 6: return `\n        <div class=\"tp tp6\">\n          <div class=\"tp6-frame\"><\/div>\n          <div class=\"tp6-inner-frame\"><\/div>\n          <div class=\"tp-content\" style=\"${posStyle}\">\n            ${brandEl}\n            <div class=\"tp-divider\"><\/div>\n            ${courseEl}\n            ${title}\n            <div class=\"tp-divider\" style=\"width:calc(320px * var(--u));\"><\/div>\n            <div class=\"tp-label\">Giảng viên<\/div>\n            ${instrEl}\n            ${dateEl}\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 7: return `\n        <div class=\"tp tp7\">\n          <div class=\"tp7-grid\">\n            <div class=\"tp7-left\">\n              <div class=\"tp-brand\">XLEADERS ACADEMY<\/div>\n              ${title}\n              <div class=\"tp-tagline\">Đào tạo lãnh đạo cấp cao<\/div>\n            <\/div>\n            <div class=\"tp7-right\">\n              ${courseEl}\n              <hr />\n              <div class=\"tp-sub-title\">Buổi học chuyên đề — trang bị tư duy, kỹ năng và công cụ quản trị thực chiến cho lãnh đạo.<\/div>\n              <hr />\n              <div class=\"tp-label\">Giảng viên<\/div>\n              ${instrEl}\n              ${dateEl}\n            <\/div>\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 8: return `\n        <div class=\"tp tp8\">\n          <div class=\"tp8-accent-bar\"><\/div>\n          <div class=\"tp8-side-bar\"><\/div>\n          <div class=\"tp-content\" style=\"${posStyle}\">\n            ${brandEl}\n            <div class=\"tp-divider\"><\/div>\n            ${courseEl}\n            ${title}\n            <div class=\"tp-label\">Giảng viên<\/div>\n            ${instrEl}\n            ${dateEl}\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 9: return `\n        <div class=\"tp tp9\">\n          <div class=\"tp9-left\">\n            ${brandEl}\n            <div class=\"tp-accent\"><\/div>\n            ${courseEl}\n            ${title}\n            ${dateEl}\n          <\/div>\n          <div class=\"tp9-right\">\n            <div class=\"tp9-photo photo-frame photo-1-1 photo-circle\">${photoHTML(0)}<\/div>\n            <div class=\"tp-instructor-label\">Giảng viên<\/div>\n            ${instrEl}\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n      case 10: {\n        const slots = [0, 1, 2].map(i => {\n          const name = instrs[i] || '';\n          if (!state.speakers[i] && !name) return '';\n          return `<div class=\"tp10-speaker\">\n            <div class=\"tp10-circle photo-frame photo-1-1 photo-circle\">${photoHTML(i)}<\/div>\n            <div class=\"tp10-name\">${escapeHtml(name) || '&nbsp;'}<\/div>\n          <\/div>`;\n        }).filter(Boolean).join('');\n        return `\n        <div class=\"tp tp10\">\n          <div class=\"tp10-accent-bar\"><\/div>\n          <div class=\"tp10-header\">\n            <div class=\"tp-brand\">XLEADERS ACADEMY<\/div>\n            ${courseEl}\n            ${title}\n            <div class=\"tp10-divider\"><\/div>\n            ${dateEl}\n          <\/div>\n          <div class=\"tp10-speakers\">${slots || '<div class=\"tp10-speaker\"><div class=\"tp10-circle photo-frame photo-1-1 photo-circle\"><div class=\"photo-ph\">👥<\/div><\/div><div class=\"tp10-name\">&nbsp;<\/div><\/div>'}<\/div>\n          ${wmEl}\n        <\/div>`;\n      }\n      case 11: return `\n        <div class=\"tp tp11\">\n          <div class=\"tp11-photo photo-frame photo-fill\">${photoHTML(0)}<\/div>\n          <div class=\"tp11-right\">\n            <div class=\"tp-brand\">XLEADERS ACADEMY<\/div>\n            <div class=\"tp-accent\"><\/div>\n            ${courseEl}\n            ${title}\n            <div class=\"tp-meta\">\n              <div class=\"tp-label\">Giảng viên<\/div>\n              ${instrEl}\n              ${dateEl}\n            <\/div>\n          <\/div>\n          ${wmEl}\n        <\/div>`;\n    }\n    return '';\n  }\n\n  // ====== RENDER ======\n  function applyBannerVars() {\n    const s = SIZES[state.size];\n    const u = Math.min(s.w, s.h) / 1080;\n    banner.style.width = s.w + 'px';\n    banner.style.height = s.h + 'px';\n    banner.style.setProperty('--u', u);\n    banner.style.setProperty('--title-size', state.titleSize);\n    banner.style.setProperty('--sub-size', state.subSize);\n    banner.style.setProperty('--letter', state.letter);\n    banner.style.setProperty('--line', state.line);\n    banner.style.setProperty('--word', state.word);\n    banner.style.setProperty('--pad', state.pad);\n    banner.style.setProperty('--gap', state.gap);\n    banner.style.setProperty('--font-title', `'${state.fontTitle}', sans-serif`);\n    banner.style.setProperty('--font-body', `'${state.fontBody}', sans-serif`);\n    banner.style.setProperty('--align', state.align);\n    banner.style.setProperty('--img-pos', `center ${state.imgPos}%`);\n    banner.style.setProperty('--img-zoom', (state.imgZoom / 100).toString());\n  }\n\n  function render() {\n    applyBannerVars();\n    banner.innerHTML = buildHTML(state.template, state);\n    $('meta-size').innerHTML = `<strong>${SIZES[state.size].w} × ${SIZES[state.size].h} px<\/strong> — ${SIZES[state.size].label}`;\n    const t = TEMPLATES.find(x => x.id === state.template);\n    $('tpl-label').textContent = `${t.name} — ${t.desc}`;\n    fitToStage();\n    applyOffsets();\n    bindEditables();\n    checkOverflow();\n  }\n\n  function applyOffsets() {\n    Object.entries(state.offsets).forEach(([key, off]) => {\n      const el = banner.querySelector(`[data-key=\"${key}\"]`);\n      if (el) el.style.transform = `translate(${off.x || 0}px, ${off.y || 0}px)`;\n    });\n  }\n\n  function fitToStage() {\n    const s = SIZES[state.size];\n    const style = getComputedStyle(stage);\n    const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);\n    const padY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);\n    const stageW = Math.max(stage.clientWidth - padX, 100);\n    const stageH = Math.max(stage.clientHeight - padY, 100);\n    const scale = Math.min(stageW / s.w, stageH / s.h, 1);\n    banner.style.transform = `scale(${scale})`;\n    wrap.style.width = (s.w * scale) + 'px';\n    wrap.style.height = (s.h * scale) + 'px';\n  }\n  window.addEventListener('resize', fitToStage);\n\n  // ====== OVERFLOW CHECK ======\n  function checkOverflow() {\n    const warn = $('warn-overflow');\n    let over = false;\n    banner.querySelectorAll('.tp-title, .tp-course, .tp-instructor').forEach(el => {\n      if (el.scrollHeight > el.clientHeight + 2 || el.scrollWidth > el.clientWidth + 2) over = true;\n    });\n    warn.classList.toggle('show', over);\n  }\n\n  // ====== AUTO-FIT ======\n  function autoFit() {\n    let size = state.titleSize;\n    let safety = 50;\n    while (size > 24 && safety-- > 0) {\n      applyBannerVars();\n      banner.innerHTML = buildHTML(state.template, state);\n      const el = banner.querySelector('.tp-title');\n      if (!el) break;\n      if (el.scrollHeight <= el.clientHeight + 2 && el.scrollWidth <= el.clientWidth + 2) break;\n      size -= 4;\n      state.titleSize = size;\n      banner.style.setProperty('--title-size', size);\n    }\n    state.titleSize = size;\n    syncUI();\n    render();\n    pushHistory();\n    showToast(`Đã căn chỉnh: cỡ tiêu đề = ${size}px`);\n  }\n\n  // ====== EDITABLE & DRAG ======\n  function bindEditables() {\n    banner.querySelectorAll('[data-editable]').forEach(el => {\n      el.addEventListener('click', (e) => {\n        if (el.getAttribute('contenteditable') === 'true') return;\n        e.stopPropagation();\n        el.setAttribute('contenteditable', 'true');\n        el.focus();\n      });\n      el.addEventListener('blur', () => {\n        el.removeAttribute('contenteditable');\n        const key = el.dataset.key;\n        const text = el.innerText.trim();\n        if (key === 'topic') state.topic = text;\n        else if (key === 'course') state.course = text;\n        else if (key === 'date') state.date = text;\n        else if (key === 'instructor0') state.instructors[0] = text;\n        pushHistory();\n      });\n      el.addEventListener('keydown', (e) => {\n        if (e.key === 'Enter') { e.preventDefault(); el.blur(); }\n      });\n    });\n    banner.querySelectorAll('[data-draggable]').forEach(el => {\n      let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;\n      el.addEventListener('mousedown', (e) => {\n        if (el.getAttribute('contenteditable') === 'true') return;\n        e.preventDefault();\n        dragging = true;\n        sx = e.clientX; sy = e.clientY;\n        const key = el.dataset.key;\n        const off = state.offsets[key] || { x: 0, y: 0 };\n        ox = off.x; oy = off.y;\n      });\n      window.addEventListener('mousemove', (e) => {\n        if (!dragging) return;\n        const s = SIZES[state.size];\n        const scale = parseFloat(banner.style.transform.replace('scale(', '')) || 1;\n        const dx = (e.clientX - sx) / scale;\n        const dy = (e.clientY - sy) / scale;\n        const key = el.dataset.key;\n        state.offsets[key] = { x: ox + dx, y: oy + dy };\n        el.style.transform = `translate(${ox + dx}px, ${oy + dy}px)`;\n      });\n      window.addEventListener('mouseup', () => {\n        if (dragging) { dragging = false; pushHistory(); }\n      });\n    });\n  }\n\n  // ====== UI SYNC ======\n  function syncUI() {\n    $('course').value = state.course;\n    $('topic').value = state.topic;\n    $('instructor1').value = state.instructors[0] || '';\n    $('instructor2').value = state.instructors[1] || '';\n    $('instructor3').value = state.instructors[2] || '';\n    $('date').value = state.date;\n    $('size').value = state.size;\n    $('font-title').value = state.fontTitle;\n    $('font-body').value = state.fontBody;\n    $('title-size').value = state.titleSize;\n    $('title-size-val').textContent = state.titleSize + 'px';\n    $('sub-size').value = state.subSize;\n    $('sub-size-val').textContent = state.subSize + 'px';\n    $('letter').value = state.letter;\n    $('letter-val').textContent = state.letter + 'px';\n    $('line').value = state.line;\n    $('line-val').textContent = Number(state.line).toFixed(2);\n    $('word').value = state.word;\n    $('word-val').textContent = state.word + 'px';\n    $('pad').value = state.pad;\n    $('pad-val').textContent = state.pad + 'px';\n    $('gap').value = state.gap;\n    $('gap-val').textContent = state.gap + 'px';\n    $('jpg-q').value = state.jpgQ;\n    $('jpg-q-val').textContent = state.jpgQ + '%';\n    $('img-pos').value = state.imgPos;\n    $('img-pos-val').textContent = state.imgPos + '%';\n    $('img-zoom').value = state.imgZoom;\n    $('img-zoom-val').textContent = state.imgZoom + '%';\n    document.querySelectorAll('#align-group .btn-toggle').forEach(b => {\n      b.classList.toggle('on', b.dataset.align === state.align);\n    });\n    document.querySelectorAll('.pos-cell').forEach(c => {\n      c.classList.toggle('on', c.dataset.pos === state.pos);\n    });\n    document.querySelectorAll('.tpl').forEach(el => {\n      el.classList.toggle('active', parseInt(el.dataset.tpl, 10) === state.template);\n    });\n    // speakers\n    state.speakers.forEach((src, i) => {\n      const slot = document.querySelector(`.speaker-slot[data-slot=\"${i}\"]`);\n      if (!slot) return;\n      const img = slot.querySelector('img');\n      if (img) img.remove();\n      slot.classList.toggle('has-img', !!src);\n      if (src) {\n        const im = document.createElement('img');\n        im.src = src;\n        slot.insertBefore(im, slot.querySelector('.ph'));\n      }\n    });\n  }\n\n  // ====== BUILD TEMPLATE PICKER ======\n  function buildTemplatePicker() {\n    const list = $('tpl-list');\n    list.innerHTML = '';\n    const g1 = TEMPLATES.filter(t => !t.needsImg);\n    const g2 = TEMPLATES.filter(t => t.needsImg);\n    list.insertAdjacentHTML('beforeend', `<div class=\"tpl-group-label\">Không cần ảnh (8)<\/div>`);\n    g1.forEach(t => list.insertAdjacentHTML('beforeend', tplCard(t)));\n    list.insertAdjacentHTML('beforeend', `<div class=\"tpl-group-label\">Có ảnh diễn giả (3)<\/div>`);\n    g2.forEach(t => list.insertAdjacentHTML('beforeend', tplCard(t)));\n    list.querySelectorAll('.tpl').forEach(el => {\n      el.addEventListener('click', () => {\n        state.template = parseInt(el.dataset.tpl, 10);\n        syncUI(); render(); pushHistory();\n      });\n    });\n  }\n  function tplCard(t) {\n    return `<div class=\"tpl\" data-tpl=\"${t.id}\">\n      <div class=\"tpl-swatch\" style=\"${t.swatchCss}\"><\/div>\n      ${t.name}<br><span style=\"font-weight:400;font-size:10px;\">${t.desc}<\/span>\n    <\/div>`;\n  }\n\n  // ====== FONTS ======\n  const FONT_SAMPLE = \"XLEADERS ACADEMY giảng viên ăâêôơưđ Đào tạo lãnh đạo 0123456789\";\n  function fontSpecs() {\n    const families = ['Oswald', 'Inter', 'Playfair Display', 'Montserrat', 'Raleway', 'Lora'];\n    const specs = [];\n    families.forEach(f => {\n      [400, 500, 600, 700].forEach(w => specs.push(`${w} 40px '${f}'`));\n    });\n    return specs;\n  }\n  async function prepareFonts() {\n    if (!document.fonts || !document.fonts.load) return;\n    try {\n      await Promise.all(fontSpecs().map(s => document.fonts.load(s, FONT_SAMPLE)));\n      await document.fonts.ready;\n    } catch (_) {}\n    if (!allFontsReady()) {\n      await new Promise(r => setTimeout(r, 300));\n      try {\n        await Promise.all(fontSpecs().map(s => document.fonts.load(s, FONT_SAMPLE)));\n      } catch (_) {}\n    }\n  }\n  function allFontsReady() {\n    if (!document.fonts || !document.fonts.check) return true;\n    return fontSpecs().every(s => {\n      try { return document.fonts.check(s, FONT_SAMPLE); } catch (_) { return true; }\n    });\n  }\n\n  // ====== EXPORT ======\n  async function exportCanvas(tplOverride = null, scale = 1) {\n    if (typeof html2canvas !== 'function') throw new Error('html2canvas chưa tải');\n    await prepareFonts();\n    const s = SIZES[state.size];\n    // render to temp\n    const temp = document.createElement('div');\n    temp.className = 'banner';\n    const u = Math.min(s.w, s.h) / 1080;\n    temp.style.cssText = banner.style.cssText;\n    temp.style.transform = 'none';\n    temp.style.position = 'fixed';\n    temp.style.top = '-99999px';\n    temp.style.left = '0';\n    temp.style.width = s.w + 'px';\n    temp.style.height = s.h + 'px';\n    temp.innerHTML = buildHTML(tplOverride || state.template, state);\n    document.body.appendChild(temp);\n    try {\n      const cvs = await html2canvas(temp, {\n        width: s.w, height: s.h,\n        windowWidth: s.w, windowHeight: s.h,\n        scale: scale, backgroundColor: null, useCORS: true, logging: false\n      });\n      return cvs;\n    } finally {\n      document.body.removeChild(temp);\n    }\n  }\n  function canvasToBlob(cvs, type, quality) {\n    return new Promise(res => cvs.toBlob(res, type, quality));\n  }\n  function download(blob, name) {\n    const url = URL.createObjectURL(blob);\n    const a = document.createElement('a'); a.href = url; a.download = name;\n    document.body.appendChild(a); a.click(); document.body.removeChild(a);\n    URL.revokeObjectURL(url);\n  }\n  function exportName(ext) {\n    const course = sanitize(state.course) || 'XLeaders';\n    const topic = sanitize(state.topic).slice(0, 40) || 'Banner';\n    const s = SIZES[state.size];\n    return `XLeaders_Banner_${course}_${topic}_M${state.template}_${s.w}x${s.h}.${ext}`;\n  }\n\n  async function downloadPNG() {\n    const cvs = await exportCanvas(null, 2);\n    const blob = await canvasToBlob(cvs, 'image/png');\n    download(blob, exportName('png'));\n    showToast('Đã tải PNG 2x.');\n  }\n  async function downloadJPG() {\n    const cvs = await exportCanvas(null, 1);\n    const blob = await canvasToBlob(cvs, 'image/jpeg', state.jpgQ / 100);\n    download(blob, exportName('jpg'));\n    showToast(`Đã tải JPG (${state.jpgQ}%).`);\n  }\n  async function copyImage() {\n    const cvs = await exportCanvas(null, 1);\n    const blob = await canvasToBlob(cvs, 'image/png');\n    try {\n      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);\n      showToast('Đã sao chép vào clipboard.');\n    } catch (_) { showToast('Trình duyệt không hỗ trợ copy ảnh.'); }\n  }\n  async function downloadZIP() {\n    if (typeof JSZip !== 'function') { showToast('JSZip chưa tải'); return; }\n    const zip = new JSZip();\n    const course = sanitize(state.course) || 'XLeaders';\n    for (const t of TEMPLATES) {\n      showToast(`Đang xuất mẫu ${t.id}/11...`);\n      const cvs = await exportCanvas(t.id, 1);\n      const blob = await canvasToBlob(cvs, 'image/png');\n      const s = SIZES[state.size];\n      zip.file(`M${String(t.id).padStart(2,'0')}_${course}_${s.w}x${s.h}.png`, blob);\n    }\n    const out = await zip.generateAsync({ type: 'blob' });\n    download(out, `XLeaders_Banners_ALL_${course}_${SIZES[state.size].w}x${SIZES[state.size].h}.zip`);\n    showToast('Đã tải ZIP 11 mẫu.');\n  }\n\n  // ====== PRESET ======\n  const PRESET_KEY = 'xleaders.banner.preset';\n  function savePreset() {\n    try {\n      localStorage.setItem(PRESET_KEY, JSON.stringify(state));\n      showToast('Đã lưu preset.');\n    } catch (_) { showToast('Không lưu được preset.'); }\n  }\n  function loadPreset() {\n    try {\n      const raw = localStorage.getItem(PRESET_KEY);\n      if (!raw) { showToast('Chưa có preset nào.'); return; }\n      state = Object.assign({}, DEFAULT_STATE, JSON.parse(raw));\n      syncUI(); render(); pushHistory();\n      showToast('Đã tải preset.');\n    } catch (_) { showToast('Preset lỗi.'); }\n  }\n  function resetState() {\n    state = JSON.parse(JSON.stringify(DEFAULT_STATE));\n    const d = new Date();\n    state.date = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;\n    syncUI(); render(); pushHistory();\n    showToast('Đã reset về mặc định.');\n  }\n\n  // ====== BIND UI ======\n  function bindUI() {\n    // accordion\n    document.querySelectorAll('.acc-hd').forEach(h => {\n      h.addEventListener('click', () => h.parentElement.classList.toggle('closed'));\n    });\n\n    // inputs\n    const bindText = (id, key) => {\n      $(id).addEventListener('input', (e) => { state[key] = e.target.value; render(); });\n      $(id).addEventListener('change', pushHistory);\n    };\n    bindText('course', 'course');\n    bindText('topic', 'topic');\n    bindText('date', 'date');\n    [0, 1, 2].forEach(i => {\n      $('instructor' + (i + 1)).addEventListener('input', (e) => { state.instructors[i] = e.target.value; render(); });\n      $('instructor' + (i + 1)).addEventListener('change', pushHistory);\n    });\n\n    $('size').addEventListener('change', (e) => { state.size = e.target.value; render(); pushHistory(); });\n    $('font-title').addEventListener('change', (e) => { state.fontTitle = e.target.value; render(); pushHistory(); });\n    $('font-body').addEventListener('change', (e) => { state.fontBody = e.target.value; render(); pushHistory(); });\n\n    const bindRange = (id, key, label, fmt) => {\n      $(id).addEventListener('input', (e) => {\n        state[key] = parseFloat(e.target.value);\n        $(label).textContent = fmt(state[key]);\n        render();\n      });\n      $(id).addEventListener('change', pushHistory);\n    };\n    bindRange('title-size', 'titleSize', 'title-size-val', v => v + 'px');\n    bindRange('sub-size', 'subSize', 'sub-size-val', v => v + 'px');\n    bindRange('letter', 'letter', 'letter-val', v => v + 'px');\n    bindRange('line', 'line', 'line-val', v => Number(v).toFixed(2));\n    bindRange('word', 'word', 'word-val', v => v + 'px');\n    bindRange('pad', 'pad', 'pad-val', v => v + 'px');\n    bindRange('gap', 'gap', 'gap-val', v => v + 'px');\n    bindRange('jpg-q', 'jpgQ', 'jpg-q-val', v => v + '%');\n    bindRange('img-pos', 'imgPos', 'img-pos-val', v => v + '%');\n    bindRange('img-zoom', 'imgZoom', 'img-zoom-val', v => v + '%');\n\n    document.querySelectorAll('#align-group .btn-toggle').forEach(b => {\n      b.addEventListener('click', () => {\n        state.align = b.dataset.align;\n        syncUI(); render(); pushHistory();\n      });\n    });\n    document.querySelectorAll('.pos-cell').forEach(c => {\n      c.addEventListener('click', () => {\n        state.pos = c.dataset.pos;\n        syncUI(); render(); pushHistory();\n      });\n    });\n\n    // speakers\n    document.querySelectorAll('.speaker-slot').forEach(slot => {\n      const idx = parseInt(slot.dataset.slot, 10);\n      const input = slot.querySelector('input[type=\"file\"]');\n      const rm = slot.querySelector('.remove-x');\n      input.addEventListener('change', (e) => {\n        const f = e.target.files && e.target.files[0];\n        if (!f) return;\n        const fr = new FileReader();\n        fr.onload = () => {\n          state.speakers[idx] = fr.result;\n          syncUI(); render(); pushHistory();\n        };\n        fr.readAsDataURL(f);\n      });\n      rm.addEventListener('click', (e) => {\n        e.preventDefault(); e.stopPropagation();\n        state.speakers[idx] = null;\n        input.value = '';\n        syncUI(); render(); pushHistory();\n      });\n    });\n\n    // buttons\n    $('btn-render').addEventListener('click', async () => {\n      await prepareFonts(); render(); showToast('Đã tạo preview.');\n    });\n    $('btn-png').addEventListener('click', () => wrapLoad(downloadPNG));\n    $('btn-jpg').addEventListener('click', () => wrapLoad(downloadJPG));\n    $('btn-copy').addEventListener('click', () => wrapLoad(copyImage));\n    $('btn-zip').addEventListener('click', () => wrapLoad(downloadZIP));\n    $('btn-autofit').addEventListener('click', autoFit);\n    $('btn-save-preset').addEventListener('click', savePreset);\n    $('btn-load-preset').addEventListener('click', loadPreset);\n    $('btn-reset').addEventListener('click', () => { if (confirm('Reset toàn bộ về mặc định?')) resetState(); });\n\n    // rulers\n    stage.addEventListener('mousemove', (e) => {\n      const rect = stage.getBoundingClientRect();\n      $('ruler-h').style.top = (e.clientY - rect.top) + 'px';\n      $('ruler-v').style.left = (e.clientX - rect.left) + 'px';\n    });\n\n    // keyboard\n    window.addEventListener('keydown', (e) => {\n      const inInput = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || document.activeElement.getAttribute('contenteditable') === 'true';\n      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {\n        e.preventDefault(); undo();\n      } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {\n        e.preventDefault(); redo();\n      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {\n        e.preventDefault(); wrapLoad(downloadPNG);\n      } else if (e.code === 'Space' && !inInput) {\n        e.preventDefault(); prepareFonts().then(() => { render(); showToast('Đã tạo preview.'); });\n      }\n    });\n  }\n\n  async function wrapLoad(fn) {\n    try { await fn(); } catch (e) { showToast('Lỗi: ' + (e.message || 'không rõ')); }\n  }\n\n  // ====== INIT ======\n  buildTemplatePicker();\n  bindUI();\n  syncUI();\n  prepareFonts().then(() => {\n    render();\n    pushHistory();\n  });\n})();\n<\/script>\n\n<\/body>\n<\/html>\n"</script>
+
+<script>
+(function() {
+
+  // ====== READ TEMPLATE ======
+  const TEMPLATE = JSON.parse(document.getElementById('tpl').textContent);
+
+  // ====== STATE ======
+  let logoDataUrl = null;
+
+  // ====== COLOR UTILS ======
+  function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    return r + ', ' + g + ', ' + b;
+  }
+  function lightenHex(hex, f) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    const lr = Math.round(r+(255-r)*f), lg = Math.round(g+(255-g)*f), lb = Math.round(b+(255-b)*f);
+    return '#'+[lr,lg,lb].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+  function darkenHex(hex, f) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    const dr = Math.round(r*(1-f)), dg = Math.round(g*(1-f)), db = Math.round(b*(1-f));
+    return '#'+[dr,dg,db].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+
+  // ====== STRING UTILS ======
+  function sr(str, find, replace) { return str.split(find).join(replace); } // safeReplace
+  function sanitize(str) { return str.replace(/[^a-zA-Z0-9À-ɏ]/g,'').replace(/\s+/g,'') || 'Brand'; }
+  function sanitizeFile(str) { return str.replace(/[^a-zA-Z0-9]/g,'') || 'Brand'; }
+  function escJS(str) { return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n'); }
+
+  // ====== GET CONFIG ======
+  function getConfig() {
+    return {
+      logoDataUrl,
+      brandName:   $('brand-name').value.trim() || 'Thương hiệu',
+      tagline:     $('tagline').value.trim() || '',
+      website:     $('website').value.trim() || 'website.com',
+      primaryColor:$('color-primary').value,
+      accentColor: $('color-accent').value,
+      coursePlaceholder: $('course-default').value.trim() || 'Khoá học K01',
+      topicPlaceholder:  $('topic-default').value.trim() || 'Chủ đề buổi học',
+      instructorDefault: $('instructor-default').value.trim() || 'Giảng viên'
+    };
+  }
+
+  // ====== GENERATE HTML ======
+  function generateBrandedHTML(cfg) {
+    const { logoDataUrl: logo, brandName, tagline, website, primaryColor: primary, accentColor: accent, coursePlaceholder, topicPlaceholder, instructorDefault } = cfg;
+    const navy  = darkenHex(primary, 0.55);
+    const cream = lightenHex(primary, 0.92);
+    const rgbStr = hexToRgb(primary);
+    const brandUpper = brandName.toUpperCase();
+    const safeBrand  = sanitizeFile(brandName);
+    const presetKey  = safeBrand.toLowerCase();
+    const jsName     = escJS(brandName);
+    const jsWm       = escJS(website);
+
+    let html = TEMPLATE;
+
+    // Colors
+    html = sr(html, '--red: #C22620',    '--red: ' + primary);
+    html = sr(html, '--gold: #D4AF37',   '--gold: ' + accent);
+    html = sr(html, '--navy: #1B2A4A',   '--navy: ' + navy);
+    html = sr(html, '--cream: #FFF8E1',  '--cream: ' + cream);
+    html = sr(html, 'rgba(194, 38, 32, 0.4)', 'rgba(' + rgbStr + ', 0.4)');
+
+    // Title
+    html = sr(html,
+      '<title>XLeaders Academy | Banner Generator</title>',
+      '<title>' + brandName + ' | Banner Generator</title>'
+    );
+
+    // Header
+    const newHeader = logo
+      ? '  <img src="' + logo + '" alt="' + brandName + '" style="height:36px;border-radius:50%;margin-right:8px;vertical-align:middle;">
+  <span>' + brandName + '</span>
+  <span class="sep">|</span>
+  <span>Banner Generator</span>'
+      : '  <span>' + brandName + '</span>
+  <span class="sep">|</span>
+  <span>Banner Generator</span>';
+    html = sr(html,
+      '  <span>XLeaders Academy</span>
+  <span class="sep">|</span>
+  <span>Banner Generator</span>',
+      newHeader
+    );
+
+    // Footer
+    html = sr(html,
+      '  <span>XLeaders Academy</span>
+  <span class="sep">|</span>
+  <span>xleader.edu.vn</span>',
+      '  <span>' + brandName + '</span>
+  <span class="sep">|</span>
+  <span>' + website + '</span>'
+    );
+
+    // JS constants
+    html = sr(html, "const brand = 'XLeaders Academy'", "const brand = '" + jsName + "'");
+    html = sr(html, "const wm = 'xleader.edu.vn'",      "const wm = '" + jsWm + "'");
+
+    // Template brand elements
+    html = sr(html,
+      '<div class="tp-brand">XLEADERS</div>\n                <div class="tp-brand">ACADEMY</div>',
+      '<div class="tp-brand">' + brandUpper + '</div>'
+    );
+    html = sr(html, '"XLEADERS ACADEMY"', '"' + brandUpper + '"');
+    html = sr(html, "'XLEADERS ACADEMY'", "'" + brandUpper + "'");
+    html = sr(html, '<div class="tp-brand">XLEADERS ACADEMY</div>', '<div class="tp-brand">' + brandUpper + '</div>');
+
+    // Taglines
+    if (tagline) {
+      html = sr(html, 'Đào tạo lãnh đạo</div>',      tagline + '</div>');
+      html = sr(html, 'Đào tạo lãnh đạo cấp cao</div>', tagline + '</div>');
+      html = sr(html,
+        '<div class="tp-tagline">Đào tạo lãnh đạo</div>',
+        '<div class="tp-tagline">' + tagline + '</div>'
+      );
+      html = sr(html,
+        'Buổi học chuyên đề — trang bị tư duy, kỹ năng và công cụ quản trị thực chiến cho lãnh đạo.',
+        'Buổi học chuyên đề — ' + tagline + '.'
+      );
+    }
+
+    // Default state
+    html = sr(html, "course: 'MTCV CEO K09'",                    "course: '" + escJS(coursePlaceholder) + "'");
+    html = sr(html, "topic: 'Tư duy lãnh đạo chiến lược'",       "topic: '" + escJS(topicPlaceholder) + "'");
+    html = sr(html, "instructors: ['TS. Nguyễn Văn A', '', '']", "instructors: ['" + escJS(instructorDefault) + "', '', '']");
+
+    // Template swatches
+    html = sr(html, "'background:#C22620;'",  "'" + 'background:' + primary + ";'");
+    html = sr(html, "'background:#FFF;box-shadow:inset 0 0 0 3px #C22620;'",
+                    "'background:#FFF;box-shadow:inset 0 0 0 3px " + primary + ";'");
+    html = sr(html, "'background:linear-gradient(#1A1A1A 50%,#fff 50%);'",
+                    "'background:linear-gradient(" + navy + " 50%,#fff 50%);'");
+    html = sr(html, "'background:#fff;box-shadow:inset 10px 0 0 #C22620;'",
+                    "'background:#fff;box-shadow:inset 10px 0 0 " + primary + ";'");
+    html = sr(html, "'background:#1A1A1A;box-shadow:inset 0 0 0 3px #D4AF37;'",
+                    "'background:#1A1A1A;box-shadow:inset 0 0 0 3px " + accent + ";'");
+    html = sr(html, "'background:linear-gradient(90deg,#C22620 55%,#D4AF37 55%);'",
+                    "'background:linear-gradient(90deg," + primary + " 55%," + accent + " 55%);'");
+    html = sr(html, "'background:#fff;box-shadow:inset 0 4px 0 #C22620;'",
+                    "'background:#fff;box-shadow:inset 0 4px 0 " + primary + ";'");
+    html = sr(html, "'background:linear-gradient(90deg,#D4AF37 40%,#1A1A1A 40%);'",
+                    "'background:linear-gradient(90deg," + accent + " 40%,#1A1A1A 40%);'");
+    html = sr(html,
+      "'background:linear-gradient(90deg,#fff 50%,#fff 50%);border-right:3px solid #C22620 !important;'",
+      "'background:linear-gradient(90deg,#fff 50%,#fff 50%);border-right:3px solid " + primary + " !important;'"
+    );
+
+    // FONT_SAMPLE
+    html = sr(html,
+      'const FONT_SAMPLE = "XLEADERS ACADEMY giảng viên ăâêôơưđ Đào tạo lãnh đạo 0123456789"',
+      'const FONT_SAMPLE = "' + brandUpper + ' giảng viên ăâêôơưđ ' + (tagline||brandName) + ' 0123456789"'
+    );
+
+    // Export file names
+    html = sr(html, "const course = sanitize(state.course) || 'XLeaders'",
+                    "const course = sanitize(state.course) || '" + safeBrand + "'");
+    html = sr(html, '`XLeaders_Banner_${course}_${topic}_M${state.template}_${s.w}x${s.h}.${ext}`',
+                    '`' + safeBrand + '_Banner_${course}_${topic}_M${state.template}_${s.w}x${s.h}.${ext}`');
+    html = sr(html, '`XLeaders_Banners_ALL_${course}_${SIZES[state.size].w}x${SIZES[state.size].h}.zip`',
+                    '`' + safeBrand + '_Banners_ALL_${course}_${SIZES[state.size].w}x${SIZES[state.size].h}.zip`');
+
+    // Preset key
+    html = sr(html, "const PRESET_KEY = 'xleaders.banner.preset'",
+                    "const PRESET_KEY = '" + presetKey + ".banner.preset'");
+
+    return html;
+  }
+
+  // ====== GENERATE HDSD MD ======
+  function generateHDSD_md(cfg) {
+    const { brandName, website, coursePlaceholder } = cfg;
+    const safeFileName = sanitizeFile(brandName) + '_banner.html';
+    return `# Hướng Dẫn Sử Dụng — ${brandName} Banner Generator
+
+> File: \`${safeFileName}\`  
+> Website: ${website}
+
+---
+
+## 1. Mở file trên máy tính
+
+File \`${safeFileName}\` là ứng dụng web chạy hoàn toàn local, **không cần cài đặt thêm**, không cần internet (sau khi tải font lần đầu).
+
+**Cách mở:**
+1. Tìm file \`${safeFileName}\` trong thư mục đã lưu
+2. Double-click → file mở trong trình duyệt
+3. Khuyến nghị: **Google Chrome** hoặc **Microsoft Edge**
+
+> 💡 Nếu Safari gặp lỗi export: click chuột phải → Open With → Google Chrome
+
+**Yêu cầu kỹ thuật:**
+- Hệ điều hành: macOS / Windows / Linux
+- Trình duyệt: Chrome 90+, Edge 90+, Firefox 88+
+- Không cần Python, Node.js hay server
+
+---
+
+## 2. Tổng quan giao diện
+
+| Khu vực | Vị trí | Chức năng |
+|---------|---------|-----------|
+| Panel trái | Bên trái | Toàn bộ cài đặt nội dung & mẫu |
+| Vùng preview | Bên phải | Xem banner real-time |
+| Thanh nút | Dưới preview | Xuất file |
+
+**Các accordion cài đặt:**
+- **Nội dung** — Tên khóa học, chủ đề, giảng viên, ngày, ảnh diễn giả
+- **Kích thước & Mẫu** — Kích thước xuất, chọn layout
+- **Typography** — Font, cỡ chữ, căn chỉnh, letter/line/word spacing
+- **Khoảng cách & Vị trí** — Padding, gap, vị trí nội dung
+- **Tiện ích** — Auto-fit, preset, chất lượng JPG
+
+---
+
+## 3. Nhập nội dung banner
+
+- **Tên khóa học** — vd: \`${coursePlaceholder}\`
+- **Chủ đề buổi học** — Tiêu đề chính của banner
+- **Tên giảng viên** — Tối đa 3 người (phân cách bằng \`·\`)
+- **Ngày tháng** — Format tự do, vd: \`15/06/2025\`
+
+**Ảnh diễn giả:**
+- Click vòng tròn \`+\` để upload ảnh (JPG/PNG)
+- Ảnh hiển thị dạng circle crop
+- Mẫu 9: 1 ảnh | Mẫu 10: 3 ảnh | Mẫu 11: ảnh full-height
+- Điều chỉnh vị trí (0% = trên, 100% = dưới)
+- Click \`×\` để xóa ảnh
+
+---
+
+## 4. Chọn mẫu và kích thước
+
+**11 mẫu layout:**
+
+| # | Mẫu | Đặc điểm |
+|---|-----|----------|
+| 1 | Màu dọc | Nền màu thương hiệu, thanh ngang trên/dưới |
+| 2 | Trắng ngang | Split trái màu / phải trắng |
+| 3 | Đen sang trọng | Nền đen, viền góc vàng |
+| 4 | Split tối/sáng | Nửa tối nửa sáng |
+| 5 | Tối giản | Nền trắng, đường kẻ màu |
+| 6 | Khung double | Nền đen, khung đôi |
+| 7 | Magazine | Grid 2 cột phong cách tạp chí |
+| 8 | Navy | Nền navy đậm chuyên nghiệp |
+| 9 | Speaker 1 ảnh | Nửa màu + ảnh tròn bên phải |
+| 10 | Speaker 3 ảnh | 3 ảnh tròn hàng dưới |
+| 11 | Speaker featured | Ảnh full-height bên trái |
+
+**9 kích thước xuất:**
+
+| Kích thước | Pixels | Dùng cho |
+|-----------|--------|----------|
+| Slide 16:9 | 1920×1080 | PowerPoint, Zalo, Facebook |
+| Facebook Avatar | 1080×1080 | Ảnh đại diện fanpage |
+| Zalo Avatar | 1080×1080 | Ảnh đại diện Zalo OA |
+| Facebook Cover | 1640×624 | Ảnh bìa fanpage |
+| Zalo Cover | 1920×720 | Ảnh bìa Zalo |
+| FB Post vuông | 1080×1080 | Bài đăng vuông |
+| FB Post ngang | 1200×630 | Bài đăng ngang |
+| FB Post dọc | 1080×1350 | Bài đăng dọc |
+| FB Story/Reels | 1080×1920 | Story & video thumbnail |
+
+---
+
+## 5. Xuất file (Export)
+
+### 5.1 Tải PNG 2x *(Khuyến nghị)*
+- Nút **"Tải PNG 2x"** ở góc dưới phải vùng preview
+- Độ phân giải gấp đôi → chất lượng cao nhất
+- Phím tắt: \`Ctrl+S\` (Windows) / \`Cmd+S\` (Mac)
+
+### 5.2 Tải JPG
+- Dung lượng nhỏ hơn PNG
+- Điều chỉnh chất lượng (60–100%) trong mục **Tiện ích**
+- Mặc định: 92%
+
+### 5.3 Copy clipboard
+- Copy ảnh → dán thẳng vào PowerPoint, Zalo, Canva
+- Chỉ hoạt động trên Chrome / Edge
+
+### 5.4 Tải ZIP tất cả (11 mẫu)
+- Xuất 11 mẫu cùng lúc, đóng gói ZIP
+- Xem trước toàn bộ layout trước khi chọn
+- Mất 30–60 giây tùy số ảnh diễn giả
+
+> 💡 Trước khi xuất: nhấn \`Space\` hoặc **"Tạo preview"** để đảm bảo render đúng font.
+
+---
+
+## 6. Phím tắt
+
+| Phím | Chức năng |
+|------|-----------|
+| \`Space\` | Tạo / làm mới preview |
+| \`Ctrl+S\` / \`Cmd+S\` | Tải PNG 2x |
+| \`Ctrl+Z\` / \`Cmd+Z\` | Hoàn tác |
+| \`Ctrl+Y\` / \`Cmd+Shift+Z\` | Làm lại |
+| Click text trên banner | Chỉnh sửa trực tiếp |
+| Kéo text | Thay đổi vị trí |
+
+---
+
+## 7. Preset — Lưu cài đặt
+
+- **Lưu preset** → Lưu toàn bộ cài đặt vào bộ nhớ trình duyệt
+- **Tải preset** → Khôi phục cài đặt lần trước
+- **Reset** → Về mặc định thương hiệu ${brandName}
+
+> ⚠️ Preset lưu trong trình duyệt (localStorage) — không chuyển sang máy khác.
+
+---
+
+## 8. Xử lý sự cố
+
+| Sự cố | Nguyên nhân | Giải pháp |
+|-------|-------------|-----------|
+| Font sai / chưa đúng | Google Fonts chưa tải | Chờ 3–5 giây, nhấn \`Space\` |
+| Nút tải không phản hồi | Không dùng Chrome/Edge | Chuyển sang Chrome |
+| Ảnh không hiển thị khi ZIP | Ảnh chưa upload | Upload lại ảnh trước khi export |
+| Text tràn ra ngoài | Chữ quá dài | Tiện ích → **Tự động căn chỉnh** |
+
+---
+
+*${brandName} — ${website}*
+`;
+  }
+
+  // ====== GENERATE HDSD TXT ======
+  function generateHDSD_txt(cfg) {
+    const { brandName, website, coursePlaceholder } = cfg;
+    const safeFileName = sanitizeFile(brandName) + '_banner.html';
+    return `HƯỚNG DẪN SỬ DỤNG — ${brandName} Banner Generator
+File: ${safeFileName} | Website: ${website}
+================================================================
+
+1. MỞ FILE TRÊN MÁY TÍNH
+--------------------------
+File ${safeFileName} chạy hoàn toàn local, không cần cài đặt,
+không cần internet (sau khi tải font lần đầu).
+
+Cách mở:
+  • Double-click vào file → mở trong trình duyệt
+  • Dùng Google Chrome hoặc Edge để kết quả tốt nhất
+  • Safari gặp lỗi? Chuột phải → Open With → Google Chrome
+
+Yêu cầu: Chrome 90+ / Edge 90+ / Firefox 88+
+
+
+2. GIAO DIỆN
+-------------
+  • Panel trái  → Cài đặt nội dung, mẫu, font
+  • Vùng phải   → Preview banner real-time
+  • Thanh dưới  → Xuất file
+
+
+3. NHẬP NỘI DUNG
+-----------------
+  • Tên khóa học  — vd: ${coursePlaceholder}
+  • Chủ đề        — Tiêu đề chính trên banner
+  • Giảng viên    — Tối đa 3 người
+  • Ngày tháng    — Format tự do (vd: 15/06/2025)
+  • Ảnh diễn giả  — Click vòng tròn + để upload
+
+
+4. CHỌN MẪU & KÍCH THƯỚC
+--------------------------
+11 mẫu layout: Mẫu 1 (màu dọc) đến Mẫu 11 (speaker featured)
+9 kích thước: Slide 16:9, FB Avatar, FB Cover, Zalo Cover,
+              FB Post (vuông/ngang/dọc), FB Story, Zalo Avatar
+
+
+5. XUẤT FILE
+-------------
+  [Tải PNG 2x]  — Chất lượng cao nhất  (Phím tắt: Ctrl+S / Cmd+S)
+  [Tải JPG]     — Dung lượng nhỏ hơn
+  [Copy]        — Dán vào PowerPoint / Zalo / Canva
+  [Tải ZIP]     — Xuất tất cả 11 mẫu cùng lúc
+
+Trước khi xuất: nhấn Space hoặc "Tạo preview" để refresh.
+
+
+6. PHÍM TẮT
+------------
+  Space         → Tạo / làm mới preview
+  Ctrl+S        → Tải PNG 2x
+  Ctrl+Z        → Hoàn tác
+  Ctrl+Y        → Làm lại
+  Click text    → Chỉnh sửa trực tiếp trên banner
+  Kéo text      → Thay đổi vị trí
+
+
+7. PRESET
+----------
+  Lưu preset  → Lưu toàn bộ cài đặt hiện tại
+  Tải preset  → Khôi phục lần trước
+  Reset       → Về mặc định thương hiệu ${brandName}
+
+
+8. XỬ LÝ SỰ CỐ
+----------------
+  Font sai          → Chờ 3-5s rồi nhấn Space
+  Nút không phản    → Dùng Chrome/Edge
+  Text tràn khung   → Tiện ích → Tự động căn chỉnh
+  Ảnh không export  → Upload lại ảnh trước khi export ZIP
+
+
+================================================================
+${brandName} — ${website}
+`;
+  }
+
+  // ====== DOWNLOAD ======
+  function downloadFile(content, filename, mime) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ====== EXPOSE TO WINDOW ======
+  window.downloadHTML = function() {
+    const cfg = getConfig();
+    if (!cfg.brandName || !cfg.website) {
+      showToast('⚠️ Vui lòng điền Tên thương hiệu và Website trước'); return;
+    }
+    try {
+      const html = generateBrandedHTML(cfg);
+      const safeName = sanitizeFile(cfg.brandName);
+      downloadFile(html, safeName + '_banner.html', 'text/html;charset=utf-8');
+      showToast('✅ Đã tải ' + safeName + '_banner.html');
+    } catch(e) { showToast('❌ Lỗi: ' + e.message); }
+  };
+
+  window.downloadHDSD = function(fmt) {
+    const cfg = getConfig();
+    const safeName = sanitizeFile(cfg.brandName);
+    if (fmt === 'md') {
+      downloadFile(generateHDSD_md(cfg), 'HDSD_' + safeName + '_Banner.md', 'text/markdown;charset=utf-8');
+      showToast('✅ Đã tải HDSD_' + safeName + '_Banner.md');
+    } else {
+      downloadFile(generateHDSD_txt(cfg), 'HDSD_' + safeName + '_Banner.txt', 'text/plain;charset=utf-8');
+      showToast('✅ Đã tải HDSD_' + safeName + '_Banner.txt');
+    }
+  };
+
+  window.clearLogo = function() {
+    logoDataUrl = null;
+    document.getElementById('logo-file').value = '';
+    document.getElementById('logo-preview').src = '';
+    document.getElementById('logo-upload-area').classList.remove('has-logo');
+    document.getElementById('btn-clear-logo').style.display = 'none';
+    updatePreview();
+  };
+
+  // ====== UI ======
+  function $(id) { return document.getElementById(id); }
+
+  // Logo upload
+  $('logo-file').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const fr = new FileReader();
+    fr.onload = () => {
+      logoDataUrl = fr.result;
+      $('logo-preview').src = logoDataUrl;
+      $('logo-upload-area').classList.add('has-logo');
+      $('btn-clear-logo').style.display = 'block';
+      updatePreview();
+    };
+    fr.readAsDataURL(file);
+  });
+
+  // Color sync
+  function syncColor(colorId, hexId, swatchId) {
+    const picker = $(colorId), hex = $(hexId), swatch = $(swatchId);
+    picker.addEventListener('input', () => {
+      hex.value = picker.value;
+      swatch.style.background = picker.value;
+      updatePreview();
+    });
+    hex.addEventListener('input', () => {
+      if (/^#[0-9a-fA-F]{6}$/.test(hex.value)) {
+        picker.value = hex.value;
+        swatch.style.background = hex.value;
+        updatePreview();
+      }
+    });
+  }
+  syncColor('color-primary', 'hex-primary', 'swatch-primary');
+  syncColor('color-accent',  'hex-accent',  'swatch-accent');
+
+  // Text inputs live update
+  ['brand-name','tagline','website','course-default','topic-default','instructor-default'].forEach(id => {
+    $(id).addEventListener('input', updatePreview);
+  });
+
+  // ====== LIVE PREVIEW ======
+  function updatePreview() {
+    const brandName = $('brand-name').value.trim() || 'Thương hiệu';
+    const website   = $('website').value.trim() || 'website.com';
+    const tagline   = $('tagline').value.trim() || '';
+    const primary   = $('color-primary').value;
+    const accent    = $('color-accent').value;
+    const navy      = darkenHex(primary, 0.55);
+    const cream     = lightenHex(primary, 0.92);
+    const safeName  = sanitizeFile(brandName);
+
+    // Header
+    $('preview-header').style.background = primary;
+    $('preview-brand-name').textContent   = brandName;
+    const pLogo = $('preview-logo');
+    if (logoDataUrl) { pLogo.src = logoDataUrl; pLogo.classList.add('visible'); }
+    else { pLogo.classList.remove('visible'); }
+
+    // Chips
+    $('chip-primary').style.background = primary;
+    $('chip-accent').style.background  = accent;
+    $('chip-navy').style.background    = navy;
+    $('chip-cream').style.background   = cream;
+
+    // Info
+    $('info-brand').textContent    = brandName;
+    $('info-website').textContent  = website;
+    $('info-tagline').textContent  = tagline || '—';
+    $('info-filename').textContent = safeName + '_banner.html';
+
+    // Mini banner
+    $('mini-banner').style.background = primary;
+    $('mini-banner').style.color      = '#fff';
+    $('mb-bar-top').style.background  = accent;
+    $('mb-bar-bottom').style.background = accent;
+    $('mb-brand').textContent   = brandName.toUpperCase();
+    $('mb-tagline').textContent = tagline;
+    $('mb-website').textContent = website;
+  }
+
+  updatePreview();
+
+})();
+</script>
+</body>
+</html>
