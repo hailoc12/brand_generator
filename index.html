@@ -36,6 +36,47 @@
   header h1 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
   header p { font-size: 13px; opacity: 0.65; }
 
+  /* ===== GUIDE ===== */
+  .guide-bar {
+    background: var(--app-white); border-bottom: 1px solid var(--app-border);
+    padding: 12px 24px; display: flex; align-items: flex-start; gap: 14px;
+    cursor: pointer; user-select: none;
+  }
+  .guide-bar:hover { background: var(--app-bg); }
+  .guide-bar .guide-toggle {
+    font-size: 11px; font-weight: 700; color: var(--app-primary);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    background: none; border: none; cursor: pointer; padding: 0;
+    font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  .guide-bar .guide-toggle .arrow { transition: transform .2s; display: inline-block; }
+  .guide-bar.open .guide-toggle .arrow { transform: rotate(90deg); }
+  .guide-content {
+    max-height: 0; overflow: hidden; transition: max-height .3s ease;
+    background: var(--app-bg); border-bottom: 1px solid var(--app-border);
+    padding: 0 24px;
+  }
+  .guide-bar.open + .guide-content { max-height: 500px; }
+  .guide-steps {
+    display: flex; gap: 16px; padding: 16px 0; flex-wrap: wrap;
+  }
+  .guide-step {
+    flex: 1; min-width: 180px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .guide-step .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--app-primary); color: #fff;
+    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .guide-step .step-body h4 {
+    font-size: 12px; font-weight: 700; color: var(--app-dark); margin: 0 0 2px;
+  }
+  .guide-step .step-body p {
+    font-size: 11px; color: var(--app-gray); margin: 0; line-height: 1.4;
+  }
+
   main {
     display: grid;
     grid-template-columns: 440px 1fr;
@@ -195,10 +236,10 @@
   .dl-btn .btn-text .sub { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; margin-top: 1px; }
   .dl-btn.primary { background: var(--app-primary); color: #fff; border-color: var(--app-primary); }
   .dl-btn.primary:hover { filter: brightness(1.1); }
-  .dl-btn.outline-green { color: var(--app-green); border-color: var(--app-green); }
-  .dl-btn.outline-green:hover { background: var(--app-green); color: #fff; }
-  .dl-btn.outline-gray { color: var(--app-gray); border-color: var(--app-border); }
-  .dl-btn.outline-gray:hover { background: var(--app-bg); }
+  .dl-btn.outline-gold { color: var(--app-gold); border-color: var(--app-gold); }
+  .dl-btn.outline-gold:hover { background: var(--app-gold); color: #fff; }
+  .dl-btn.outline-dark { color: var(--app-dark); border-color: var(--app-dark); opacity: 0.7; }
+  .dl-btn.outline-dark:hover { background: var(--app-dark); color: #fff; opacity: 1; }
 
   .required-note {
     font-size: 11px; color: var(--app-gray); margin-top: 12px;
@@ -223,8 +264,8 @@
   .ptab-panel.active { display: block; }
   .tab-hint { font-size: 10px; color: var(--app-gray); background: var(--app-bg); border-left: 2px solid var(--app-primary); padding: 4px 8px; margin: 0 0 8px; border-radius: 0 4px 4px 0; opacity: 0.75; }
 
-  .dl-btn.outline-deploy { color: #7B3FE4; border-color: #C4B5FD; }
-  .dl-btn.outline-deploy:hover { background: #7B3FE4; color: #fff; }
+  .dl-btn.outline-deploy { color: var(--app-dark); border-color: var(--app-gold); }
+  .dl-btn.outline-deploy:hover { background: var(--app-dark); color: var(--app-gold); }
 
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -250,6 +291,36 @@
     <p>Tạo mini-tool banner generator customize theo brand riêng của bạn</p>
   </div>
 </header>
+
+<!-- ===== GUIDE ===== -->
+<div class="guide-bar" id="guide-bar" onclick="this.classList.toggle('open')">
+  <button class="guide-toggle"><span class="arrow">▶</span> Hướng dẫn sử dụng — 3 bước tạo banner</button>
+</div>
+<div class="guide-content">
+  <div class="guide-steps">
+    <div class="guide-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Thiết lập thương hiệu</h4>
+        <p>Tải logo, chọn màu primary + accent, điền tên thương hiệu, website, tagline.</p>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Chọn mục đích & nội dung</h4>
+        <p>Chọn tab (Đào tạo, Vinh danh, Sự kiện...) → điền nội dung → xem preview bên phải.</p>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Tải về & sử dụng</h4>
+        <p>Bấm "Tải file HTML" → mở file bằng Chrome → chọn mẫu banner → tạo banner JPG/PNG.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <main>
   <!-- ===== FORM PANEL ===== -->
@@ -511,7 +582,8 @@
           <div class="mb-bar top" id="mb-bar-top" style="background:#D4AF37;"></div>
           <div style="z-index:1;text-align:center;">
             <div class="mb-brand" id="mb-brand">LỘC ĐẶNG</div>
-            <div style="font-size:10px;opacity:0.7;margin-top:4px;" id="mb-tagline">Vibe coding &amp; AI Automation cho CEO SMEs</div>
+            <div style="font-size:11px;opacity:0.9;margin-top:3px;font-weight:600;" id="mb-course">Khoá học K01</div>
+            <div style="font-size:10px;opacity:0.7;margin-top:2px;" id="mb-tagline">Vibe coding &amp; AI Automation cho CEO SMEs</div>
           </div>
           <div class="mb-bar bottom" id="mb-bar-bottom" style="background:#D4AF37;"></div>
           <div class="mb-website" id="mb-website">locdang.com</div>
@@ -530,14 +602,14 @@
             <span class="sub">File HTML chạy local — mở bằng Chrome/Edge</span>
           </span>
         </button>
-        <button class="dl-btn outline-green" onclick="downloadHDSD('md')">
+        <button class="dl-btn outline-gold" onclick="downloadHDSD('md')">
           <span class="btn-icon">📋</span>
           <span class="btn-text">
             <span class="title">Tải HDSD (.md)</span>
             <span class="sub">Hướng dẫn định dạng Markdown — mở bằng Notion / Obsidian</span>
           </span>
         </button>
-        <button class="dl-btn outline-gray" onclick="downloadHDSD('txt')">
+        <button class="dl-btn outline-dark" onclick="downloadHDSD('txt')">
           <span class="btn-icon">📄</span>
           <span class="btn-text">
             <span class="title">Tải HDSD (.txt)</span>
@@ -1171,6 +1243,22 @@ ${brandName} — ${website}
     $('mb-brand').textContent   = brandName.toUpperCase();
     $('mb-tagline').textContent = tagline;
     $('mb-website').textContent = website;
+
+    // Update mini banner content based on active tab
+    const tabCourseMap = {
+      train:   ['tab-train-course', 'tab-train-topic'],
+      honor:   ['tab-honor-badge', 'tab-honor-name'],
+      event:   ['tab-event-type', 'tab-event-name'],
+      summary: ['tab-summary-title', 'tab-summary-period'],
+      post:    ['tab-post-topic', 'tab-post-hashtag'],
+      blog:    ['tab-blog-title', 'tab-blog-category'],
+      ads:     ['tab-ads-message', 'tab-ads-offer'],
+      recruit: ['tab-recruit-position', 'tab-recruit-salary']
+    };
+    const fields = tabCourseMap[activeTab];
+    if (fields) {
+      $('mb-course').textContent = ($(fields[0]).value.trim() || '');
+    }
   }
 
   updatePreview();
