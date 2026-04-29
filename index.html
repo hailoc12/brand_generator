@@ -221,6 +221,7 @@
   .ptab.active { background: var(--app-primary); color: #fff; border-color: var(--app-primary); }
   .ptab-panel { display: none; }
   .ptab-panel.active { display: block; }
+  .tab-hint { font-size: 10px; color: var(--app-gray); background: var(--app-bg); border-left: 2px solid var(--app-primary); padding: 4px 8px; margin: 0 0 8px; border-radius: 0 4px 4px 0; opacity: 0.75; }
 
   .dl-btn.outline-deploy { color: #7B3FE4; border-color: #C4B5FD; }
   .dl-btn.outline-deploy:hover { background: #7B3FE4; color: #fff; }
@@ -257,7 +258,7 @@
     <!-- Logo -->
     <div class="section-hd"><h2>Logo thương hiệu</h2></div>
     <div class="section-body">
-      <label class="logo-upload-area" id="logo-upload-area">
+      <label class="logo-upload-area" id="logo-upload-area" for="logo-file">
         <input type="file" id="logo-file" accept="image/*" />
         <img class="logo-preview" id="logo-preview" src="" alt="Logo" />
         <div class="upload-icon">🖼️</div>
@@ -287,7 +288,7 @@
     <div class="section-hd"><h2>Màu sắc thương hiệu</h2></div>
     <div class="section-body">
       <div class="field">
-        <label>Màu chính (Primary)</label>
+        <label for="hex-primary">Màu chính (Primary)</label>
         <div class="color-row">
           <label class="color-swatch" id="swatch-primary" style="background:#C22620;">
             <input type="color" id="color-primary" value="#C22620" />
@@ -296,7 +297,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Màu phụ / Accent</label>
+        <label for="hex-accent">Màu phụ / Accent</label>
         <div class="color-row">
           <label class="color-swatch" id="swatch-accent" style="background:#D4AF37;">
             <input type="color" id="color-accent" value="#D4AF37" />
@@ -323,6 +324,7 @@
 
     <!-- Tab: Đào tạo -->
     <div class="section-body ptab-panel active" id="ptab-train">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Tên khoá học · Chủ đề = Chủ đề buổi học · Dòng dưới = Giảng viên</p>
       <div class="field">
         <label for="tab-train-course">Tên khóa học</label>
         <input type="text" id="tab-train-course" placeholder="vd: Khoá học K01" value="Khoá học K01" />
@@ -339,6 +341,7 @@
 
     <!-- Tab: Vinh danh -->
     <div class="section-body ptab-panel" id="ptab-honor">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Danh hiệu · Chủ đề = Họ tên · Dòng dưới = Chức danh</p>
       <div class="field">
         <label for="tab-honor-badge">Danh hiệu (badge)</label>
         <input type="text" id="tab-honor-badge" placeholder="vd: NHÂN VIÊN XUẤT SẮC" value="NHÂN VIÊN XUẤT SẮC" />
@@ -355,6 +358,7 @@
 
     <!-- Tab: Sự kiện -->
     <div class="section-body ptab-panel" id="ptab-event">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Loại sự kiện · Chủ đề = Tên sự kiện · Dòng dưới = Thời gian</p>
       <div class="field">
         <label for="tab-event-type">Loại sự kiện</label>
         <input type="text" id="tab-event-type" placeholder="vd: WORKSHOP / MEETING" value="WORKSHOP" />
@@ -371,6 +375,7 @@
 
     <!-- Tab: Tổng kết -->
     <div class="section-body ptab-panel" id="ptab-summary">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Tiêu đề tổng kết · Chủ đề = Kỳ · Dòng dưới = KPI nổi bật</p>
       <div class="field">
         <label for="tab-summary-title">Tiêu đề</label>
         <input type="text" id="tab-summary-title" placeholder="vd: Tổng kết Quý 1/2026" value="Tổng kết Q1/2026" />
@@ -386,6 +391,7 @@
     </div>
 
     <div class="section-body ptab-panel" id="ptab-post">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Chủ đề post · Chủ đề = Hashtag/Platform · Dòng dưới = CTA</p>
       <div class="field">
         <label for="tab-post-topic">Chủ đề post</label>
         <input type="text" id="tab-post-topic" placeholder="vd: Tips quản lý thời gian" value="Tips quản lý thời gian" />
@@ -401,6 +407,7 @@
     </div>
 
     <div class="section-body ptab-panel" id="ptab-blog">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Tên bài · Chủ đề = Chuyên mục · Dòng dưới = Tác giả</p>
       <div class="field">
         <label for="tab-blog-title">Tiêu đề bài viết</label>
         <input type="text" id="tab-blog-title" placeholder="vd: 5 chiến lược tăng trưởng..." value="5 chiến lược tăng trưởng bền vững" />
@@ -416,6 +423,7 @@
     </div>
 
     <div class="section-body ptab-panel" id="ptab-ads">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Thông điệp · Chủ đề = Offer · Dòng dưới = CTA & Link</p>
       <div class="field">
         <label for="tab-ads-message">Thông điệp chính</label>
         <input type="text" id="tab-ads-message" placeholder="vd: Tăng doanh thu 3X trong 90 ngày" value="Tăng doanh thu 3X trong 90 ngày" />
@@ -431,6 +439,7 @@
     </div>
 
     <div class="section-body ptab-panel" id="ptab-recruit">
+      <p class="tab-hint">Banner sẽ hiển thị: Tiêu đề = Vị trí · Chủ đề = Mức lương · Dòng dưới = Nơi làm việc</p>
       <div class="field">
         <label for="tab-recruit-position">Vị trí tuyển dụng</label>
         <input type="text" id="tab-recruit-position" placeholder="vd: Business Development Manager" value="Business Development Manager" />
