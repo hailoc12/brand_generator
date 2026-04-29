@@ -314,6 +314,10 @@
         <button class="ptab" data-ptab="honor">🏆 Vinh danh</button>
         <button class="ptab" data-ptab="event">🎯 Sự kiện</button>
         <button class="ptab" data-ptab="summary">📊 Tổng kết</button>
+        <button class="ptab" data-ptab="post">📱 Post MXH</button>
+        <button class="ptab" data-ptab="blog">📝 Blog</button>
+        <button class="ptab" data-ptab="ads">📢 Quảng cáo</button>
+        <button class="ptab" data-ptab="recruit">💼 Tuyển dụng</button>
       </div>
     </div>
 
@@ -378,6 +382,66 @@
       <div class="field">
         <label for="tab-summary-kpi">KPI nổi bật</label>
         <input type="text" id="tab-summary-kpi" placeholder="vd: Doanh thu 1.2 tỷ" value="Doanh thu 1.2 tỷ" />
+      </div>
+    </div>
+
+    <div class="section-body ptab-panel" id="ptab-post">
+      <div class="field">
+        <label for="tab-post-topic">Chủ đề post</label>
+        <input type="text" id="tab-post-topic" placeholder="vd: Tips quản lý thời gian" value="Tips quản lý thời gian" />
+      </div>
+      <div class="field">
+        <label for="tab-post-hashtag">Hashtag & Platform</label>
+        <input type="text" id="tab-post-hashtag" placeholder="vd: #Leadership Facebook" value="#Leadership · Facebook" />
+      </div>
+      <div class="field">
+        <label for="tab-post-cta">Call-to-action</label>
+        <input type="text" id="tab-post-cta" placeholder="vd: Comment SỐ 1 nhận ngay tài liệu" value="Comment SỐ 1 nhận ngay tài liệu" />
+      </div>
+    </div>
+
+    <div class="section-body ptab-panel" id="ptab-blog">
+      <div class="field">
+        <label for="tab-blog-title">Tiêu đề bài viết</label>
+        <input type="text" id="tab-blog-title" placeholder="vd: 5 chiến lược tăng trưởng..." value="5 chiến lược tăng trưởng bền vững" />
+      </div>
+      <div class="field">
+        <label for="tab-blog-category">Chuyên mục</label>
+        <input type="text" id="tab-blog-category" placeholder="vd: Lãnh đạo & Quản trị" value="Lãnh đạo & Quản trị" />
+      </div>
+      <div class="field">
+        <label for="tab-blog-author">Tác giả</label>
+        <input type="text" id="tab-blog-author" placeholder="vd: Lộc Đặng" value="Lộc Đặng" />
+      </div>
+    </div>
+
+    <div class="section-body ptab-panel" id="ptab-ads">
+      <div class="field">
+        <label for="tab-ads-message">Thông điệp chính</label>
+        <input type="text" id="tab-ads-message" placeholder="vd: Tăng doanh thu 3X trong 90 ngày" value="Tăng doanh thu 3X trong 90 ngày" />
+      </div>
+      <div class="field">
+        <label for="tab-ads-offer">Offer & Ưu đãi</label>
+        <input type="text" id="tab-ads-offer" placeholder="vd: Giảm 50% · Chỉ còn 10 suất" value="Giảm 50% · Chỉ còn 10 suất" />
+      </div>
+      <div class="field">
+        <label for="tab-ads-cta">CTA & Link</label>
+        <input type="text" id="tab-ads-cta" placeholder="vd: Đăng ký ngay · locdang.com" value="Đăng ký ngay · locdang.com" />
+      </div>
+    </div>
+
+    <div class="section-body ptab-panel" id="ptab-recruit">
+      <div class="field">
+        <label for="tab-recruit-position">Vị trí tuyển dụng</label>
+        <input type="text" id="tab-recruit-position" placeholder="vd: Business Development Manager" value="Business Development Manager" />
+      </div>
+      <div class="field">
+        <label for="tab-recruit-salary">Mức lương & Loại hình</label>
+        <input type="text" id="tab-recruit-salary" placeholder="vd: 20–35 triệu · Full-time" value="20–35 triệu · Full-time" />
+      </div>
+      <div class="field">
+        <label for="tab-recruit-location">Nơi làm việc</label>
+        <input type="text" id="tab-recruit-location" placeholder="vd: TP.HCM · Remote OK" value="TP.HCM · Remote OK" />
       </div>
     </div>
 
@@ -561,10 +625,26 @@
       coursePlaceholder = $('tab-event-type').value.trim()        || 'SỰ KIỆN';
       topicPlaceholder  = $('tab-event-name').value.trim()        || 'Tên sự kiện';
       instructorDefault = $('tab-event-time').value.trim()        || '09:00 · 01/06/2026';
-    } else {
+    } else if (activeTab === 'summary') {
       coursePlaceholder = $('tab-summary-title').value.trim()     || 'Tổng kết Q1/2026';
       topicPlaceholder  = $('tab-summary-period').value.trim()    || 'Q1/2026';
       instructorDefault = $('tab-summary-kpi').value.trim()       || 'Doanh thu 1.2 tỷ';
+    } else if (activeTab === 'post') {
+      coursePlaceholder = $('tab-post-topic').value.trim()        || 'Tips quản lý thời gian';
+      topicPlaceholder  = $('tab-post-hashtag').value.trim()      || '#Leadership · Facebook';
+      instructorDefault = $('tab-post-cta').value.trim()          || 'Comment SỐ 1 nhận ngay tài liệu';
+    } else if (activeTab === 'blog') {
+      coursePlaceholder = $('tab-blog-title').value.trim()        || '5 chiến lược tăng trưởng bền vững';
+      topicPlaceholder  = $('tab-blog-category').value.trim()     || 'Lãnh đạo & Quản trị';
+      instructorDefault = $('tab-blog-author').value.trim()       || 'Lộc Đặng';
+    } else if (activeTab === 'ads') {
+      coursePlaceholder = $('tab-ads-message').value.trim()       || 'Tăng doanh thu 3X trong 90 ngày';
+      topicPlaceholder  = $('tab-ads-offer').value.trim()         || 'Giảm 50% · Chỉ còn 10 suất';
+      instructorDefault = $('tab-ads-cta').value.trim()           || 'Đăng ký ngay · locdang.com';
+    } else {
+      coursePlaceholder = $('tab-recruit-position').value.trim()  || 'Business Development Manager';
+      topicPlaceholder  = $('tab-recruit-salary').value.trim()    || '20–35 triệu · Full-time';
+      instructorDefault = $('tab-recruit-location').value.trim()  || 'TP.HCM · Remote OK';
     }
     return {
       logoDataUrl,
@@ -1034,7 +1114,11 @@ ${brandName} — ${website}
    'tab-train-course','tab-train-topic','tab-train-instructor',
    'tab-honor-badge','tab-honor-name','tab-honor-role',
    'tab-event-type','tab-event-name','tab-event-time',
-   'tab-summary-title','tab-summary-period','tab-summary-kpi'
+   'tab-summary-title','tab-summary-period','tab-summary-kpi',
+   'tab-post-topic','tab-post-hashtag','tab-post-cta',
+   'tab-blog-title','tab-blog-category','tab-blog-author',
+   'tab-ads-message','tab-ads-offer','tab-ads-cta',
+   'tab-recruit-position','tab-recruit-salary','tab-recruit-location'
   ].forEach(id => { $(id).addEventListener('input', updatePreview); });
 
   // Init purpose tabs
