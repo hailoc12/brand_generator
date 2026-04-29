@@ -205,6 +205,26 @@
     padding: 8px 12px; background: #FFFBEB; border-radius: 6px; border: 1px solid #FEF3C7;
   }
 
+  /* ===== PURPOSE TABS ===== */
+  .purpose-tabs {
+    display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 2px;
+  }
+  .ptab {
+    flex: 1; min-width: 70px;
+    padding: 7px 4px; border: 2px solid var(--app-border);
+    background: var(--app-white); color: var(--app-gray);
+    border-radius: 6px; cursor: pointer; font-size: 11px;
+    font-weight: 600; text-align: center; transition: all .15s;
+    font-family: 'Inter', sans-serif; line-height: 1.3;
+  }
+  .ptab:hover { border-color: var(--app-primary); color: var(--app-primary); }
+  .ptab.active { background: var(--app-primary); color: #fff; border-color: var(--app-primary); }
+  .ptab-panel { display: none; }
+  .ptab-panel.active { display: block; }
+
+  .dl-btn.outline-deploy { color: #7B3FE4; border-color: #C4B5FD; }
+  .dl-btn.outline-deploy:hover { background: #7B3FE4; color: #fff; }
+
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
     background: var(--app-dark); color: #fff;
@@ -286,20 +306,78 @@
       </div>
     </div>
 
-    <!-- Defaults -->
+    <!-- Defaults by purpose tab -->
     <div class="section-hd"><h2>Nội dung mặc định</h2></div>
-    <div class="section-body">
+    <div class="section-body" style="padding-bottom:8px;">
+      <div class="purpose-tabs">
+        <button class="ptab active" data-ptab="train">📚 Đào tạo</button>
+        <button class="ptab" data-ptab="honor">🏆 Vinh danh</button>
+        <button class="ptab" data-ptab="event">🎯 Sự kiện</button>
+        <button class="ptab" data-ptab="summary">📊 Tổng kết</button>
+      </div>
+    </div>
+
+    <!-- Tab: Đào tạo -->
+    <div class="section-body ptab-panel active" id="ptab-train">
       <div class="field">
-        <label for="course-default">Chủ đề chính</label>
-        <input type="text" id="course-default" placeholder="vd: Khoá học K01" value="Khoá học K01" />
+        <label for="tab-train-course">Tên khóa học</label>
+        <input type="text" id="tab-train-course" placeholder="vd: Khoá học K01" value="Khoá học K01" />
       </div>
       <div class="field">
-        <label for="topic-default">Chủ đề phụ</label>
-        <input type="text" id="topic-default" placeholder="vd: Chủ đề buổi học" value="Chủ đề buổi học" />
+        <label for="tab-train-topic">Chủ đề buổi học</label>
+        <input type="text" id="tab-train-topic" placeholder="vd: Tư duy lãnh đạo" value="Chủ đề buổi học" />
       </div>
       <div class="field">
-        <label for="instructor-default">Tác giả</label>
-        <input type="text" id="instructor-default" placeholder="vd: Lộc Đặng" value="Lộc Đặng" />
+        <label for="tab-train-instructor">Tác giả / Giảng viên</label>
+        <input type="text" id="tab-train-instructor" placeholder="vd: Lộc Đặng" value="Lộc Đặng" />
+      </div>
+    </div>
+
+    <!-- Tab: Vinh danh -->
+    <div class="section-body ptab-panel" id="ptab-honor">
+      <div class="field">
+        <label for="tab-honor-badge">Danh hiệu (badge)</label>
+        <input type="text" id="tab-honor-badge" placeholder="vd: NHÂN VIÊN XUẤT SẮC" value="NHÂN VIÊN XUẤT SẮC" />
+      </div>
+      <div class="field">
+        <label for="tab-honor-name">Họ tên</label>
+        <input type="text" id="tab-honor-name" placeholder="vd: Nguyễn Văn A" value="Nguyễn Văn A" />
+      </div>
+      <div class="field">
+        <label for="tab-honor-role">Chức danh / Thành tích</label>
+        <input type="text" id="tab-honor-role" placeholder="vd: Top Performer Q1/2026" value="Top Performer Q1/2026" />
+      </div>
+    </div>
+
+    <!-- Tab: Sự kiện -->
+    <div class="section-body ptab-panel" id="ptab-event">
+      <div class="field">
+        <label for="tab-event-type">Loại sự kiện</label>
+        <input type="text" id="tab-event-type" placeholder="vd: WORKSHOP / MEETING" value="WORKSHOP" />
+      </div>
+      <div class="field">
+        <label for="tab-event-name">Tên sự kiện</label>
+        <input type="text" id="tab-event-name" placeholder="vd: Lộc Đặng Creator Summit" value="Tên sự kiện" />
+      </div>
+      <div class="field">
+        <label for="tab-event-time">Thời gian & Địa điểm</label>
+        <input type="text" id="tab-event-time" placeholder="vd: 09:00 · 01/06/2026 · Hà Nội" value="09:00 · 01/06/2026" />
+      </div>
+    </div>
+
+    <!-- Tab: Tổng kết -->
+    <div class="section-body ptab-panel" id="ptab-summary">
+      <div class="field">
+        <label for="tab-summary-title">Tiêu đề</label>
+        <input type="text" id="tab-summary-title" placeholder="vd: Tổng kết Quý 1/2026" value="Tổng kết Q1/2026" />
+      </div>
+      <div class="field">
+        <label for="tab-summary-period">Kỳ tổng kết</label>
+        <input type="text" id="tab-summary-period" placeholder="vd: Q1/2026" value="Q1/2026" />
+      </div>
+      <div class="field">
+        <label for="tab-summary-kpi">KPI nổi bật</label>
+        <input type="text" id="tab-summary-kpi" placeholder="vd: Doanh thu 1.2 tỷ" value="Doanh thu 1.2 tỷ" />
       </div>
     </div>
 
@@ -393,6 +471,13 @@
             <span class="sub">Hướng dẫn plain text — mở bằng bất kỳ editor nào</span>
           </span>
         </button>
+        <button class="dl-btn outline-deploy" onclick="downloadDeploy()">
+          <span class="btn-icon">🚀</span>
+          <span class="btn-text">
+            <span class="title">Tải HDSD Deploy (GitHub Pages)</span>
+            <span class="sub">Hướng dẫn host tool lên Internet miễn phí</span>
+          </span>
+        </button>
       </div>
       <div class="required-note">
         ⚠️ Điền <strong>Tên thương hiệu</strong> và <strong>Website</strong> trước khi tải về.
@@ -421,6 +506,7 @@
 
   // ====== STATE ======
   let logoDataUrl = null;
+  let activeTab = 'train';
 
   // ====== COLOR UTILS ======
   function hexToRgb(hex) {
@@ -446,8 +532,40 @@
   function sanitizeFile(str) { return str.replace(/[^a-zA-Z0-9]/g,'') || 'Brand'; }
   function escJS(str) { return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n'); }
 
+  // ====== PURPOSE TAB SWITCHING ======
+  function initPurposeTabs() {
+    document.querySelectorAll('.ptab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeTab = btn.dataset.ptab;
+        document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.ptab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('ptab-' + activeTab).classList.add('active');
+        updatePreview();
+      });
+    });
+  }
+
   // ====== GET CONFIG ======
   function getConfig() {
+    let coursePlaceholder, topicPlaceholder, instructorDefault;
+    if (activeTab === 'train') {
+      coursePlaceholder = $('tab-train-course').value.trim()      || 'Khoá học K01';
+      topicPlaceholder  = $('tab-train-topic').value.trim()       || 'Chủ đề buổi học';
+      instructorDefault = $('tab-train-instructor').value.trim()  || 'Giảng viên';
+    } else if (activeTab === 'honor') {
+      coursePlaceholder = $('tab-honor-badge').value.trim()       || 'NHÂN VIÊN XUẤT SẮC';
+      topicPlaceholder  = $('tab-honor-name').value.trim()        || 'Nguyễn Văn A';
+      instructorDefault = $('tab-honor-role').value.trim()        || 'Top Performer';
+    } else if (activeTab === 'event') {
+      coursePlaceholder = $('tab-event-type').value.trim()        || 'SỰ KIỆN';
+      topicPlaceholder  = $('tab-event-name').value.trim()        || 'Tên sự kiện';
+      instructorDefault = $('tab-event-time').value.trim()        || '09:00 · 01/06/2026';
+    } else {
+      coursePlaceholder = $('tab-summary-title').value.trim()     || 'Tổng kết Q1/2026';
+      topicPlaceholder  = $('tab-summary-period').value.trim()    || 'Q1/2026';
+      instructorDefault = $('tab-summary-kpi').value.trim()       || 'Doanh thu 1.2 tỷ';
+    }
     return {
       logoDataUrl,
       brandName:   $('brand-name').value.trim() || 'Thương hiệu',
@@ -455,9 +573,10 @@
       website:     $('website').value.trim() || 'website.com',
       primaryColor:$('color-primary').value,
       accentColor: $('color-accent').value,
-      coursePlaceholder: $('course-default').value.trim() || 'Khoá học K01',
-      topicPlaceholder:  $('topic-default').value.trim() || 'Chủ đề buổi học',
-      instructorDefault: $('instructor-default').value.trim() || 'Giảng viên'
+      coursePlaceholder,
+      topicPlaceholder,
+      instructorDefault,
+      activeTab
     };
   }
 
@@ -911,9 +1030,15 @@ ${brandName} — ${website}
   syncColor('color-accent',  'hex-accent',  'swatch-accent');
 
   // Text inputs live update
-  ['brand-name','tagline','website','course-default','topic-default','instructor-default'].forEach(id => {
-    $(id).addEventListener('input', updatePreview);
-  });
+  ['brand-name','tagline','website',
+   'tab-train-course','tab-train-topic','tab-train-instructor',
+   'tab-honor-badge','tab-honor-name','tab-honor-role',
+   'tab-event-type','tab-event-name','tab-event-time',
+   'tab-summary-title','tab-summary-period','tab-summary-kpi'
+  ].forEach(id => { $(id).addEventListener('input', updatePreview); });
+
+  // Init purpose tabs
+  initPurposeTabs();
 
   // ====== LIVE PREVIEW ======
   function updatePreview() {
@@ -956,6 +1081,105 @@ ${brandName} — ${website}
   }
 
   updatePreview();
+
+  // ====== GENERATE DEPLOY GUIDE ======
+  function generateDeploy_md(cfg) {
+    const { brandName, website } = cfg;
+    const safeName = sanitizeFile(brandName) + '_banner.html';
+    return `# Hướng Dẫn Deploy ${brandName} Banner Tool lên GitHub Pages
+
+> Tool: \`${safeName}\`
+> Sau khi deploy, tool sẽ chạy trên Internet — ai cũng có thể truy cập qua link.
+
+---
+
+## Yêu cầu
+
+- Tài khoản GitHub (miễn phí tại github.com)
+- File \`${safeName}\` đã tải về từ Brand Customizer
+
+---
+
+## Bước 1 — Tạo repository mới trên GitHub
+
+1. Đăng nhập github.com
+2. Click nút **"New"** (góc trên trái)
+3. Điền tên repository, ví dụ: \`banner-tool\`
+4. Chọn **Public** (bắt buộc để dùng GitHub Pages miễn phí)
+5. Tick **"Add a README file"**
+6. Click **"Create repository"**
+
+---
+
+## Bước 2 — Upload file HTML
+
+1. Trong repository vừa tạo, click **"Add file"** → **"Upload files"**
+2. Kéo thả file \`${safeName}\` vào ô upload
+3. **Đổi tên file thành \`index.html\`** (quan trọng!)
+   - Hoặc giữ tên gốc và nhớ link sẽ có đuôi tên file
+4. Điền commit message: \`Add banner tool\`
+5. Click **"Commit changes"**
+
+---
+
+## Bước 3 — Bật GitHub Pages
+
+1. Vào tab **Settings** của repository
+2. Kéo xuống mục **"Pages"** (menu bên trái)
+3. Mục **"Source"**: chọn **"Deploy from a branch"**
+4. Branch: chọn **main** | Folder: chọn **/ (root)**
+5. Click **Save**
+
+---
+
+## Bước 4 — Lấy link
+
+Sau 1-3 phút, GitHub sẽ tạo link dạng:
+
+\`\`\`
+https://[username].github.io/[repository-name]/
+\`\`\`
+
+Ví dụ: \`https://locdang.github.io/banner-tool/\`
+
+> 💡 Link này chia sẻ được cho toàn bộ team mà không cần cài đặt gì.
+
+---
+
+## Cập nhật tool sau này
+
+Khi muốn cập nhật tool (logo mới, màu mới...):
+
+1. Tải lại file HTML mới từ Brand Customizer
+2. Vào repository → **"Add file"** → **"Upload files"**
+3. Upload file mới, đặt cùng tên \`index.html\`
+4. Commit → GitHub Pages tự động cập nhật sau ~1 phút
+
+---
+
+## Lưu ý bảo mật
+
+- GitHub Pages là **public** — bất kỳ ai có link đều vào được
+- Tool không lưu dữ liệu, không cần đăng nhập
+- Dữ liệu nhập vào chỉ tồn tại trong browser của người dùng
+- An toàn để chia sẻ nội bộ công ty
+
+---
+
+*Tool tạo bởi ${brandName} Brand Customizer — ${website}*
+`;
+  }
+
+  window.downloadDeploy = function() {
+    const cfg = getConfig();
+    const safeName = sanitizeFile(cfg.brandName);
+    downloadFile(
+      generateDeploy_md(cfg),
+      'HDSD_Deploy_' + safeName + '_BannerTool.md',
+      'text/markdown;charset=utf-8'
+    );
+    showToast('✅ Đã tải hướng dẫn deploy');
+  };
 
 })();
 </script>
