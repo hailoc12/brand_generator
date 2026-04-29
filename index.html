@@ -490,28 +490,17 @@
 
     // Header
     const newHeader = logo
-      ? '  <img src="' + logo + '" alt="' + brandName + '" style="height:36px;border-radius:50%;margin-right:8px;vertical-align:middle;">
-  <span>' + brandName + '</span>
-  <span class="sep">|</span>
-  <span>Banner Generator</span>'
-      : '  <span>' + brandName + '</span>
-  <span class="sep">|</span>
-  <span>Banner Generator</span>';
+      ? '  <img src="' + logo + '" alt="' + brandName + '" style="height:36px;border-radius:50%;margin-right:8px;vertical-align:middle;">\n  <span>' + brandName + '</span>\n  <span class="sep">|</span>\n  <span>Banner Generator</span>'
+      : '  <span>' + brandName + '</span>\n  <span class="sep">|</span>\n  <span>Banner Generator</span>';
     html = sr(html,
-      '  <span>XLeaders Academy</span>
-  <span class="sep">|</span>
-  <span>Banner Generator</span>',
+      '  <span>XLeaders Academy</span>\n  <span class="sep">|</span>\n  <span>Banner Generator</span>',
       newHeader
     );
 
     // Footer
     html = sr(html,
-      '  <span>XLeaders Academy</span>
-  <span class="sep">|</span>
-  <span>xleader.edu.vn</span>',
-      '  <span>' + brandName + '</span>
-  <span class="sep">|</span>
-  <span>' + website + '</span>'
+      '  <span>XLeaders Academy</span>\n  <span class="sep">|</span>\n  <span>xleader.edu.vn</span>',
+      '  <span>' + brandName + '</span>\n  <span class="sep">|</span>\n  <span>' + website + '</span>'
     );
 
     // JS constants
